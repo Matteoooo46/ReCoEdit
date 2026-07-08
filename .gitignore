@@ -2,7 +2,8 @@
 # 模型权重 & Checkpoints（太大，不归 git 管）
 # ============================================
 models/
-flow_grpo/
+flow_grpo/best_checkpoints/
+flow_grpo/dataset/
 *resume*/
 lora_*/
 full_all_*/
@@ -17,9 +18,9 @@ qwen3-vl-30b-ecom-rewriter-sft/
 # 外部项目（有自己的 git 或从别处克隆的）
 # ============================================
 DiffSynth-Studio/
-LlamaFactory/
+# LlamaFactory kept (wandb/ data ignored by rules above)
 reward-server/
-src/
+/src/
 
 # ============================================
 # 验证集/测试数据（图片太多太大）

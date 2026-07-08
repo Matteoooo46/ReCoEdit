@@ -37,7 +37,7 @@ qwen_vl_client, qwen_vl_model_name = client_qw3, model_name_qw3
 
 # 配置 deepseekr1 文本模型客户端
 base_url = "https://qianfan.baidubce.com/v2"
-api_key = "REDACTED"
+api_key = os.getenv("BAIDU_API_KEY")
 appid = "app-H8t9051I"
 
 client_deepseekr1 = OpenAI(
@@ -60,7 +60,7 @@ def get_base64_encoded_image_gemini(image_path):
 def parse_image_by_gemini(image_paths, prompt_gemini):
     API_URL = "http://llm-gateway-sgp.internal/ai-serve/v1/gemini-2.5-pro:generateContent"
     # ⚠️ 这里填入你的 Gemini API KEY (内网写字模型的Key)
-    API_KEY = "REDACTED" 
+    API_KEY = os.getenv("IMAGE_API_KEY", "") 
     
     if isinstance(image_paths, str):
         image_paths = [image_paths]
@@ -135,7 +135,7 @@ def get_manju_character_by_gemini(reference_img_paths, product_info, existing_ch
 
 def generate_transfer_script_by_gemini(reference_json_data, product_desc, product_img_path, character_img_path):
     API_URL = "http://llm-gateway-sgp.internal/ai-serve/v1/gemini-2.5-pro:generateContent"
-    API_KEY = "REDACTED"
+    API_KEY = os.getenv("IMAGE_API_KEY", "")
 
     # 替换 Prompt 占位符
     prompt_text = System_Prompt_scene_plot_transfer_v2.replace(
@@ -815,7 +815,7 @@ def generate_original_script_by_gemini(product_desc, product_img_path, character
     不依赖模板，直接根据商品信息、商品图和人物图生成分镜剧本
     """
     API_URL = "http://llm-gateway-sgp.internal/ai-serve/v1/gemini-2.5-pro:generateContent"
-    API_KEY = "REDACTED"
+    API_KEY = os.getenv("IMAGE_API_KEY", "")
 
     # 1. 组装 Prompt：将商品文案直接拼接到系统 Prompt 后面
     prompt_text = System_Prompt_scene_plot_v2 + f"\n\n【新商品文案信息】:\n{product_desc}"
@@ -1000,7 +1000,7 @@ if __name__ == '__main__':
                         print(f"🎨 正在调用外网 Novita API 生成最终定妆照...")
                         
                         # ⚠️ 请确保这里替换成你真实的 Novita API KEY
-                        NOVITA_API_KEY = "REDACTED"
+                        NOVITA_API_KEY = os.getenv("NOVITA_API_KEY")
                         
                         # 图片和 Prompt 存放在同级目录 (workspace 下)
                         final_image_save_path = os.path.join(workspace, "final_lifestyle_image.png")

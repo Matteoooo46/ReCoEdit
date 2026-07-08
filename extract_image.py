@@ -34,7 +34,7 @@ qwen_vl_client, qwen_vl_model_name = client_qw3, model_name_qw3
 
 # 配置 deepseekr1 文本模型客户端
 base_url = "https://qianfan.baidubce.com/v2"
-api_key = "REDACTED"
+api_key = os.getenv("BAIDU_API_KEY")
 appid = "app-H8t9051I"
 
 client_deepseekr1 = OpenAI(

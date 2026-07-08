@@ -35,7 +35,7 @@ qwen_vl_client, qwen_vl_model_name = client_qw3, model_name_qw3
 
 # 配置 deepseekr1 文本模型客户端
 base_url = "https://qianfan.baidubce.com/v2"
-api_key = "REDACTED"
+api_key = os.getenv("BAIDU_API_KEY")
 appid = "app-H8t9051I"
 
 client_deepseekr1 = OpenAI(
@@ -58,7 +58,7 @@ def get_base64_encoded_image_gemini(image_path):
 def parse_image_by_gemini(image_paths, prompt_gemini):
     API_URL = "http://llm-gateway-sgp.internal/ai-serve/v1/gemini-2.5-pro:generateContent"
     # ⚠️ 这里填入你的 Gemini API KEY
-    API_KEY = "REDACTED" 
+    API_KEY = os.getenv("IMAGE_API_KEY", "") 
     
     if isinstance(image_paths, str):
         image_paths = [image_paths]

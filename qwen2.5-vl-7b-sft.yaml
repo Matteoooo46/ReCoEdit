@@ -1,0 +1,55 @@
+# ==========================================
+# 1. 模型路径与模板 (核心修改区)
+# ==========================================
+model_name_or_path: /data/phd/kousiqi/zhitao/models/Qwen2.5-VL-7B-Instruct  # 👉 修改 1：换成 2.5VL 的路径
+
+# 💥 极其关键：必须换成 2.5 专属的模板！
+template: qwen2_vl  # 👉 修改 2：把 qwen3_vl 改成 qwen2_vl
+
+# ==========================================
+# 2. 训练阶段与方式
+# ==========================================
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_target: all
+
+# ==========================================
+# 3. 数据集配置
+# ==========================================
+dataset_dir: /data/phd/kousiqi/zhitao/LlamaFactory/data
+dataset: my_qwen_custom_data
+cutoff_len: 4096
+max_samples: 1000000 
+overwrite_cache: true
+preprocessing_num_workers: 4
+
+# ==========================================
+# 4. 输出路径与保存策略
+# ==========================================
+output_dir: /data/phd/kousiqi/zhitao/qwen2_5-vl-sft-expanded # 👉 修改 3：改个新名字防止覆盖旧文件
+logging_steps: 10
+save_steps: 1000
+save_total_limit: 3
+plot_loss: true
+overwrite_output_dir: true
+
+# ==========================================
+# 5. 训练超参数 (硬件相关)
+# ==========================================
+per_device_train_batch_size: 1 # 如果显存够（比如你有80G A100），可以尝试调成 2 或 4
+gradient_accumulation_steps: 8
+learning_rate: 1.0e-4
+num_train_epochs: 10.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true # 现代显卡务必保持 true，能大幅省显存并提速
+ddp_timeout: 180000000
+
+# ==========================================
+# 6. 验证集评估
+# ==========================================
+val_size: 0.1
+per_device_eval_batch_size: 1
+eval_strategy: steps
+eval_steps: 500

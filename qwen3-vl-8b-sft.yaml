@@ -1,0 +1,60 @@
+### qwen3_vl_8b_lora_sft.yaml
+
+# ==========================================
+# 1. 模型路径与模板 (核心修改区)
+# ==========================================
+model_name_or_path: /data/phd/kousiqi/zhitao/models/Qwen3-VL-8B-Instruct # ⚠️ 必须改成你服务器上的真实路径
+
+# 💥 极其关键：根据你截图中的官方文档，Qwen3-VL 必须使用特定的对话模板
+template: qwen3_vl_nothink
+
+# ==========================================
+# 2. 训练阶段与方式
+# ==========================================
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_target: all # 默认作用于所有线性层，效果最好
+
+# ==========================================
+# 3. 数据集配置
+# ==========================================
+# ⚠️ 这里填写的不是 JSON 文件的路径，而是你在 LLaMA-Factory/data/dataset_info.json 中注册的【数据集名称】！
+dataset_dir: /data/phd/kousiqi/zhitao/LlamaFactory/data
+dataset: my_qwen_rewriter_data_v2
+cutoff_len: 4096 # 截断长度，如果你的图文描述很长，可以调大到 2048
+max_samples: 1000000 # ⚠️ 如果你的数据量大于1000，请把这个数字调大，否则它最多只读1000条！
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+# ==========================================
+# 4. 输出路径与保存策略
+# ==========================================
+output_dir: /data/phd/kousiqi/zhitao/qwen3-vl-8b-sft-v2 # ⚠️ 训练出的 LoRA 权重保存位置
+logging_steps: 10
+save_steps: 500
+plot_loss: true
+overwrite_output_dir: true
+resume_from_checkpoint: /data/phd/kousiqi/zhitao/qwen3-vl-8b-sft-v2/checkpoint-10000
+report_to: wandb
+run_name: qwen3-vl-8b-rewriter-v2
+
+# ==========================================
+# 5. 训练超参数 (硬件相关)
+# ==========================================
+per_device_train_batch_size: 1 # 如果显存够（比如你有80G A100），可以尝试调成 2 或 4
+gradient_accumulation_steps: 8
+learning_rate: 1.0e-4
+num_train_epochs: 10.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true # 现代显卡务必保持 true，能大幅省显存并提速
+ddp_timeout: 180000000
+
+# ==========================================
+# 6. 验证集评估
+# ==========================================
+val_size: 0.1
+per_device_eval_batch_size: 1
+eval_strategy: steps
+eval_steps: 500

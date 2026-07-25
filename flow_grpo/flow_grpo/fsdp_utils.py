@@ -68,6 +68,7 @@ def fsdp_wrapper(model, fsdp_config, get_transformer_layer_cls, ignored_modules=
         cpu_offload=CPUOffload(offload_params=fsdp_config.cpu_offload),
         device_mesh=device_mesh,
         use_orig_params=True,
+        sync_module_states=True,
     )
     
     # Apply activation checkpointing if enabled

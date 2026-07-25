@@ -3,7 +3,7 @@
 # Proxy — VLM server (10.15.2.90) must be reachable directly (no proxy)
 export http_proxy=http://oversea-squid2.ko.txyun:11080
 export https_proxy=http://oversea-squid2.ko.txyun:11080
-export no_proxy=localhost,127.0.0.1,10.15.2.90,localaddress,localdomain.com,internal,corp.kuaishou.com,test.gifshow.com,staging.kuaishou.com
+export no_proxy=localhost,127.0.0.1,10.15.2.90,10.80.243.156,localaddress,localdomain.com,internal,corp.kuaishou.com,test.gifshow.com,staging.kuaishou.com
 
 # Wandb
 export WANDB_API_KEY=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

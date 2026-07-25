@@ -1,12 +1,10 @@
 from diffsynth.pipelines.qwen_image import QwenImagePipeline, ModelConfig
 from PIL import Image
-from openai import OpenAI
 import torch
 import os
 import json
 import shutil
 import base64
-import httpx
 import re
 import time
 import html as html_lib
@@ -38,7 +36,7 @@ OUTPUT_BASE_DIR = "/data/phd/kousiqi/zhitao/qwen_inference_results_single"
 product_name = os.path.basename(TARGET_WORKSPACE_DIR)
 
 # ⚠️ 每次换 ckpt 或换 prompt 策略时修改这一个，其余路径自动隔离
-RUN_TAG = "original"
+RUN_TAG = "original_prompt_full_added"
 
 # 存放生成的原始图 (frame_0.jpg, frame_1.jpg)
 RAW_OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, f"{product_name}_raw_{RUN_TAG}")
@@ -53,39 +51,8 @@ HTML_REPORT_PATH = os.path.join(OUTPUT_BASE_DIR, f"{product_name}_{RUN_TAG}_view
 VIEWER_CONFIG_PATH = os.path.join(REPORT_DIR, f"{product_name}_viewer_config.json")
 PROMPT_LOG_PATH = os.path.join(REPORT_DIR, f"{product_name}_prompt_rewrite_log.json")
 
-# ==========================================
-# 1.1 QwenVL Prompt 改写模型配置（来自 test_qwenvl.py）
-# ==========================================
-openai_api_key_qw25 = "EMPTY"
-openai_api_base_qw25 = "http://10.80.243.156:8080/v1"
-model_name_qw25 = "Qwen3-VL-30B-A3B-Instruct"
-client_qw25 = OpenAI(api_key=openai_api_key_qw25, base_url=openai_api_base_qw25)
-client_qw25._client.timeout = httpx.Timeout(360.0)
 
 
-PROMPT_REWRITE_SYSTEM = """
-你是一个电商商品图像编辑 prompt 改写助手。你的任务是根据商品参考图和 original prompt，生成一段更清晰、更具体、更适合图像编辑模型执行的中文 prompt。
-
-请遵守以下原则：
-
-1. 以 original prompt 的编辑意图为主。
-保留并扩写 original prompt 中的场景、背景、光线、氛围、构图、人物、动作、道具和风格要求。不要改变原始编辑目标，不要把不同 prompt 都改写成相似的商品展示图。
-
-2. 适度补充商品细节。
-根据参考图描述商品本体的关键视觉特征，包括商品类别、整体形状、主色/辅色、主要材质、明显 logo/文字/图案、最重要的结构细节。商品细节要足够帮助模型保持商品一致性，但不要写成参考图长 caption。
-
-3. 不要过度描述参考图。
-参考图只用于识别商品本体。不要描述参考图里的原始背景、桌面、墙面、光照、阴影、拍摄角度、摆放方式、手、模特或装饰物，除非 original prompt 明确要求保留。
-
-4. 控制内容比例和长度。
-最终 prompt 中，编辑目标约占 50%，商品细节约占 40%，质量约束约占 10%。总长度控制在 120～150 个中文字符。不要列小标题，不要分点输出。
-
-5. 质量和约束。
-保持商品颜色、形状、logo、文字、图案和材质尽量与参考图一致；不要新增无关文字、水印、乱码；不要让商品变形、镜像、错色或丢失关键标识。只描述单帧静态画面。
-
-只输出一条最终 prompt，格式如下：
-i2v描述：<优化后的 prompt>
-"""
 
 
 BLOB_PREFIX = f"qwen_inference/{product_name}/{RUN_TAG}"
@@ -111,103 +78,8 @@ def upload_files(file_paths, blob_prefix):
     return [path_to_url.get(p, "") if p else "" for p in file_paths]
 
 NO_TEXT_SUFFIX = "，画面中不要出现任何多余的文字、字幕、水印、签名、乱码或无关logo，仅保留商品原本的品牌文字且保持清晰一致。"
-# CONSTRAINT_PREFIX = """【硬性约束 - 商品本体】
-# 严格参照输入参考图保留商品主体：外观/形状/结构/比例/姿态、材质纹理与表面工艺、所有颜色（含色彩配比与明暗）、所有 logo 与商标、所有可见文字（逐字保留，不重排、不翻译、不更换字体）、所有图案/印花/装饰元素，以及任何用于识别该商品的关键细节。商品本体不得变形、不得缩放比例失衡、不得缺失部件、不得增加部件。
-
-# 【冲突解决】
-# 如下文描述与参考图商品本体存在出入，一律以参考图为准；下文描述仅用于补充画面其余部分（背景、场景、光照、构图、氛围、其他物体）。未提及的区域保持与参考图一致。
-
-# 【画面描述】
-# """
 ANTI_TEXT_NEGATIVE_PROMPT = "text, watermark, signature, letters, writing, words, typography, logo, brand name, garbled characters, subtitles"
 IMAGE_EXTS = (".png", ".jpg", ".jpeg", ".webp")
-
-
-def encode_img_to_base64(img_path):
-    """把本地图片编码成 OpenAI 兼容的 data URL。"""
-    ext = os.path.splitext(img_path)[1].lower()
-    mime = {
-        ".jpg": "image/jpeg",
-        ".jpeg": "image/jpeg",
-        ".png": "image/png",
-        ".webp": "image/webp",
-    }.get(ext, "image/png")
-
-    with open(img_path, "rb") as f:
-        data = f.read()
-    return f"data:{mime};base64," + base64.b64encode(data).decode("utf-8")
-
-
-def extract_rewritten_prompt(answer):
-    """从 QwenVL 返回中提取 i2v描述 字段；解析失败时返回清洗后的原文。"""
-    if not answer:
-        return ""
-    match = re.search(r"i2v描述\s*[:：]\s*(.+)", answer, flags=re.DOTALL)
-    if match:
-        text = match.group(1).strip()
-    else:
-        text = answer.strip()
-
-    # 去掉可能的 Markdown 包裹和多余换行
-    text = text.strip().strip("`").strip()
-    text = re.sub(r"\s+", " ", text)
-    return text
-
-
-def rewrite_prompt_with_qwenvl(original_prompt, ref_image_paths):
-    """
-    根据商品参考图 + 原始 prompt 改写得到更适合 Qwen-Image-Edit 的 prompt。
-    ref_image_paths: 单个路径字符串或路径列表，作为商品参考送入 QwenVL。
-    失败时不影响主流程，直接返回 original_prompt。
-    """
-    try:
-        if isinstance(ref_image_paths, str):
-            ref_image_paths = [ref_image_paths]
-
-        user_content = []
-        valid_paths = []
-        for p in ref_image_paths:
-            if not os.path.exists(p):
-                print(f"  [警告] 参考图不存在，跳过: {p}")
-                continue
-            user_content.append({"type": "image_url", "image_url": {"url": encode_img_to_base64(p)}})
-            valid_paths.append(p)
-
-        if not valid_paths:
-            print("  [警告] 没有可用的商品参考图，回退原 prompt。")
-            return original_prompt
-
-        user_content.append({
-            "type": "text",
-            "text": (
-                "上面是商品的参考图。请先识别商品类别，按系统提示对应模板详尽描述商品本体的全部可见细节"
-                "（颜色、面料/材质、文字、logo、表面工艺等），再结合下面的原始 prompt 重新表达编辑需求，"
-                "改写成更适合 Qwen-Image-Edit 推理的高质量 prompt。\n"
-                f"原始 prompt：{original_prompt}"
-            ),
-        })
-
-        messages = [
-            {"role": "system", "content": PROMPT_REWRITE_SYSTEM},
-            {"role": "user", "content": user_content},
-        ]
-
-        start_time = time.time()
-        response = client_qw25.chat.completions.create(
-            model=model_name_qw25,
-            messages=messages,
-        )
-        answer = response.choices[0].message.content
-        rewritten_prompt = extract_rewritten_prompt(answer)
-        print("[QwenVL 原始返回]", answer)
-        print(f"[QwenVL 改写耗时] {time.time() - start_time:.2f} 秒")
-
-        if rewritten_prompt:
-            return rewritten_prompt
-        return original_prompt
-    except Exception as e:
-        print(f"  [Prompt改写失败，回退原prompt] 参考图: {ref_image_paths}, 报错: {e}")
-        return original_prompt
 
 
 def safe_load_prompt(json_path):
@@ -441,11 +313,11 @@ pipe = QwenImagePipeline.from_pretrained(
     ],
     tokenizer_config=None,
     processor_config=ModelConfig(path=MODEL_CONFIG_PATHS["processor"]),
-    vram_limit=135
+    vram_limit=75
 )
 
 # GRPO round2 best checkpoint (eager-cloud-11, epoch 28, reward peak 0.491)
-lora_path = "/data/phd/kousiqi/zhitao/flow_grpo/best_checkpoints/grpo_round2_epoch28_for_inference.safetensors"
+lora_path = "/data/phd/kousiqi/zhitao/full_all_products_rewrite_expanded_ultimate_resume_132000/step-40000.safetensors"
 pipe.load_lora(pipe.dit, lora_path)
 
 print("模型加载完毕！")
@@ -501,7 +373,6 @@ viewer_globals.append({"name": "人物参考", "path": f"{folder_name}/p1_char.p
 print(f"✅ 参考图片已整理至 Report 文件夹。用于推理的图片共 {len(edit_image_list)} 张。")
 
 # QwenVL 改写时使用的商品参考图列表（仅商品图，不含人物图；推理时不依赖目标图）
-ref_image_paths_for_rewrite = [os.path.join(found_reference_dir, r) for r in ref_imgs]
 
 # ==========================================
 # 4. 获取帧列表并排序
@@ -547,13 +418,12 @@ for i, target_file in enumerate(target_files):
 
     # 先用 QwenVL 基于商品参考图 + 原始 prompt 改写出更详尽的 edit prompt，再进入 edit 模型推理
     nano_img_path = os.path.join(found_target_dir, target_file)
-    rewritten_prompt_text = rewrite_prompt_with_qwenvl(original_prompt_text, ref_image_paths_for_rewrite)
-
+    
     # 保留原逻辑：在约束模板 + 改写prompt末尾追加”不要文字”的指令
-    # prompt_text = rewritten_prompt_text + NO_TEXT_SUFFIX
-    prompt_text = rewritten_prompt_text + NO_TEXT_SUFFIX
+    # prompt_text = original_prompt_text + NO_TEXT_SUFFIX
+    prompt_text = original_prompt_text + NO_TEXT_SUFFIX
     print(f"Original Prompt: {original_prompt_text[:80]}...")
-    print(f"Rewrite Prompt: {rewritten_prompt_text[:120]}...")
+    print(f"Using original prompt directly...")
 
     # 保留原逻辑：反向提示词黑名单
     anti_text_negative_prompt = ANTI_TEXT_NEGATIVE_PROMPT
@@ -594,7 +464,7 @@ for i, target_file in enumerate(target_files):
             "target_file": target_file,
             "json_file": json_file,
             "original_prompt": original_prompt_text,
-            "rewritten_prompt": rewritten_prompt_text,
+            "rewritten_prompt": original_prompt_text,
             "final_pipe_prompt": prompt_text,
         })
 
@@ -632,7 +502,7 @@ for i, target_file in enumerate(target_files):
     nano_local, my_local = frame_local_paths[log_idx]
     log = prompt_rewrite_logs[log_idx]
     product_viewer_config["frames"].append({
-        "prompt": log["rewritten_prompt"],
+        "prompt": log["original_prompt"],
         "original_prompt": log["original_prompt"],
         "nano_path": url_map.get(nano_local, ""),
         "my_path": url_map.get(my_local, ""),

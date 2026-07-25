@@ -39,7 +39,7 @@ OUTPUT_BASE_DIR = "/data/phd/kousiqi/zhitao/qwen_inference_results_single"
 product_name = os.path.basename(TARGET_WORKSPACE_DIR)
 
 # ⚠️ 每次换 ckpt 或换 prompt 策略时修改这一个，其余路径自动隔离
-RUN_TAG = "rewrite_optimized"
+RUN_TAG = "original"
 
 # 存放生成的原始图 (frame_0.jpg, frame_1.jpg)
 RAW_OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, f"{product_name}_raw_{RUN_TAG}")

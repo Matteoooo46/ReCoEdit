@@ -462,6 +462,7 @@ pipe = QwenImagePipeline.from_pretrained(
 
 # GRPO round2 best checkpoint (eager-cloud-11, epoch 28, reward peak 0.491)
 lora_path = "/data/phd/kousiqi/zhitao/flow_grpo/best_checkpoints/grpo_round2_epoch28_for_inference.safetensors"
+lora_path = "/data/phd/kousiqi/zhitao/flow_grpo/best_checkpoints/grpo_round2_epoch28_for_inference.safetensors"
 pipe.load_lora(pipe.dit, lora_path)
 
 # ==========================================

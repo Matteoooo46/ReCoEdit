@@ -421,7 +421,7 @@ def product_consistency_score(device):
     from io import BytesIO
     from openai import AsyncOpenAI
 
-    VLM_BASE_URL = "http://10.15.2.90:8080/v1"
+    VLM_BASE_URL = "http://10.80.243.156:8080/v1"
     VLM_MODEL = "Qwen3-VL-30B-A3B-Instruct"
 
     SCORING_PROMPT = (
@@ -434,8 +434,14 @@ def product_consistency_score(device):
         "Step 2 — 图片2中是否有该产品？\n"
         "Step 3 — 逐项对比关键特征是否匹配。\n"
         "Step 4 — 结论。\n\n"
-        "规则：有明显颜色/款式/图案差异即为 No。若人物穿戴产品，只对比产品本身。\n"
-        "最后一行仅输出：Yes 或 No"
+        "评分标准（1-5分）：\n"
+        "- 1分：图片2中完全没有该产品，或外观完全不同。\n"
+        "- 2分：有轻微相似，但颜色、款式、细节明显不同。\n"
+        "- 3分：大致类型和主要颜色正确，但款式细节有差异。\n"
+        "- 4分：外观高度相似，仅有细微差异。\n"
+        "- 5分：颜色、款式、图案、细节高度一致。\n\n"
+        "若人物穿戴产品，只对比产品本身。\n"
+        "最后一行仅输出：Score: X（X为1-5整数）"
     )
 
     # Disable proxy so the request goes directly to the VLM server
@@ -447,55 +453,49 @@ def product_consistency_score(device):
             timeout=90.0,
         ),
     )
+    # Semaphore is created per-call inside _fn to avoid cross-event-loop issues
 
-    def _pil_to_base64(img: Image) -> str:
+    def _pil_to_base64(img: Image, max_size=768) -> str:
+        if max(img.size) > max_size:
+            ratio = max_size / max(img.size)
+            img = img.resize((int(img.size[0]*ratio), int(img.size[1]*ratio)), Image.LANCZOS)
         buf = BytesIO()
-        img.save(buf, format="JPEG")
+        img.save(buf, format="JPEG", quality=85)
         return f"data:image;base64,{base64.b64encode(buf.getvalue()).decode()}"
 
     def _extract_score(text: str) -> float:
-        # Binary classification: Yes (consistent) → 1.0, No (inconsistent) → 0.0
+        # 1-5 scoring → normalize to 0-1
         text = text.strip()
-        # With CoT, the last non-empty line should be the verdict
+        m = re.search(r"Score:\s*([1-5])", text)
+        if m:
+            return (float(m.group(1)) - 1.0) / 4.0
+        # Fallback: check for Yes/No (old format compatibility)
         lines = [l.strip() for l in text.split('\n') if l.strip()]
-        if lines:
-            last_line = lines[-1]
-            if last_line in ("Yes", "yes", "YES", "No", "no", "NO"):
-                return 1.0 if last_line.lower() == "yes" else 0.0
-        # Fallback: check if the whole text starts with Yes/No
-        if text.startswith("Yes") or text.startswith("yes") or text.startswith("YES"):
-            return 1.0
-        elif text.startswith("No") or text.startswith("no") or text.startswith("NO"):
-            return 0.0
-        # Last resort: regex search
-        m_yes = re.search(r'\b[Yy]es\b', text)
-        m_no = re.search(r'\b[Nn]o\b', text)
-        if m_yes and not m_no:
-            return 1.0
-        elif m_no and not m_yes:
-            return 0.0
+        if lines and lines[-1] in ("Yes", "yes", "YES", "No", "no", "NO"):
+            return 1.0 if lines[-1].lower() == "yes" else 0.0
         return 0.0
 
-    async def _score_one(gen_img: Image, ref_img: Image, product_name: str) -> float:
+    async def _score_one(gen_img: Image, ref_img: Image, product_name: str, sem: asyncio.Semaphore) -> float:
         prompt = SCORING_PROMPT.format(product_name=product_name)
-        try:
-            resp = await client.chat.completions.create(
-                model=VLM_MODEL,
-                messages=[{"role": "user", "content": [
-                    {"type": "text", "text": prompt},
-                    {"type": "image_url", "image_url": {"url": _pil_to_base64(ref_img)}},
-                    {"type": "image_url", "image_url": {"url": _pil_to_base64(gen_img)}},
-                ]}],
-                temperature=0.2,
-                max_tokens=800,
-            )
-            return _extract_score(resp.choices[0].message.content.strip())
-        except Exception as e:
-            print(f"[product_consistency] _score_one error: {e}")
-            return 0.0
+        async with sem:
+            try:
+                resp = await client.chat.completions.create(
+                    model=VLM_MODEL,
+                    messages=[{"role": "user", "content": [
+                        {"type": "text", "text": prompt},
+                        {"type": "image_url", "image_url": {"url": _pil_to_base64(ref_img)}},
+                        {"type": "image_url", "image_url": {"url": _pil_to_base64(gen_img)}},
+                    ]}],
+                    temperature=0.2,
+                    max_tokens=800,
+                )
+                return _extract_score(resp.choices[0].message.content.strip())
+            except Exception as e:
+                print(f"[product_consistency] _score_one error: {e}")
+                return 0.0
 
-    async def _score_batch(gen_imgs, ref_imgs, product_names):
-        tasks = [_score_one(g, r, n) for g, r, n in zip(gen_imgs, ref_imgs, product_names)]
+    async def _score_batch(gen_imgs, ref_imgs, product_names, sem):
+        tasks = [_score_one(g, r, n, sem) for g, r, n in zip(gen_imgs, ref_imgs, product_names)]
         return await asyncio.gather(*tasks)
 
     CLASSIFY_PROMPT = (
@@ -526,33 +526,67 @@ def product_consistency_score(device):
             return False
         return True  # default to Yes (conservative, same as reclassify_new_logic.py)
 
-    async def _classify_one_has_product(prompt: str, ref_img: Image.Image) -> bool:
+    async def _classify_one_has_product(prompt: str, ref_img: Image.Image, sem: asyncio.Semaphore) -> bool:
         """Returns True if the prompt describes a scene that should include the reference product."""
-        try:
-            resp = await client.chat.completions.create(
-                model=VLM_MODEL,
-                messages=[{"role": "user", "content": [
-                    {"type": "image_url", "image_url": {"url": _pil_to_base64(ref_img)}},
-                    {"type": "text", "text": CLASSIFY_PROMPT.format(prompt=prompt)},
-                ]}],
-                max_tokens=500,
-                temperature=0.0,
-            )
-            text = resp.choices[0].message.content.strip()
-            result = _extract_classify_verdict(text)
-            cot_preview = text[:120].replace('\n', ' | ')
-            print(f"[product_consistency] classify: product={ref_img.size}, prompt={prompt[:60]}... → {'Yes' if result else 'No'}  [CoT: {cot_preview}...]")
-            return result
-        except Exception as e:
-            print(f"[product_consistency] classify error: {e}, defaulting to Yes")
-            return True
+        async with sem:
+            try:
+                resp = await client.chat.completions.create(
+                    model=VLM_MODEL,
+                    messages=[{"role": "user", "content": [
+                        {"type": "image_url", "image_url": {"url": _pil_to_base64(ref_img)}},
+                        {"type": "text", "text": CLASSIFY_PROMPT.format(prompt=prompt)},
+                    ]}],
+                    max_tokens=500,
+                    temperature=0.0,
+                )
+                text = resp.choices[0].message.content.strip()
+                result = _extract_classify_verdict(text)
+                cot_preview = text[:120].replace('\n', ' | ')
+                print(f"[product_consistency] classify: product={ref_img.size}, prompt={prompt[:60]}... → {'Yes' if result else 'No'}  [CoT: {cot_preview}...]")
+                return result
+            except Exception as e:
+                print(f"[product_consistency] classify error: {e}, defaulting to Yes")
+                return True
 
-    async def _classify_batch_has_product(prompts_list, ref_imgs_list):
+    async def _classify_batch_has_product(prompts_list, ref_imgs_list, sem):
         """Classify prompt+ref_image pairs in parallel, returns list of bool."""
-        tasks = [_classify_one_has_product(p, r) for p, r in zip(prompts_list, ref_imgs_list)]
+        tasks = [_classify_one_has_product(p, r, sem) for p, r in zip(prompts_list, ref_imgs_list)]
         return await asyncio.gather(*tasks)
 
     def _fn(images, prompts, metadata, ref_images=None):
+        # SEMAPHORE — avoids overwhelming the VLM server
+        sem = asyncio.Semaphore(4)
+
+        # CLASSIFICATION toggle — set to False for pure 1-5 scoring (vague-monkey-8 style)
+        USE_CLASSIFY = False
+
+        if not USE_CLASSIFY:
+            # === Pure 1-5 scoring (no classification, no inversion) ===
+            if isinstance(images, torch.Tensor):
+                img_array = (images * 255).round().clamp(0, 255).to(torch.uint8).cpu().numpy()
+                img_array = img_array.transpose(0, 2, 3, 1)
+            gen_pils = []; ref_pils = []; product_names = []
+            for i in range(len(prompts)):
+                meta = metadata[i]
+                img = Image.fromarray(img_array[i]) if isinstance(images, torch.Tensor) else images[i]
+                ref_path = meta.get("product_ref_for_reward")
+                gen_pils.append(img if isinstance(img, Image.Image) else Image.fromarray(img))
+                product_names.append(meta.get("product_name", ""))
+                if ref_path and __import__("os").path.exists(ref_path):
+                    ref_pils.append(Image.open(ref_path).convert("RGB"))
+                elif ref_images is not None:
+                    r = ref_images[i]
+                    ref_pils.append(r if isinstance(r, Image.Image) else Image.fromarray(
+                        (r.permute(1, 2, 0).cpu().numpy() * 255).astype("uint8")))
+                else:
+                    ref_pils.append(gen_pils[-1])
+            raw_scores = asyncio.run(_score_batch(gen_pils, ref_pils, product_names, sem))
+            scores = [float(s) for s in raw_scores]
+            print(f"[product_consistency] pure 1-5 scoring — raw_scores[:10]: {raw_scores[:10]}")
+            print(f"[product_consistency] scores[:10]: {scores[:10]}")
+            return scores, {}
+
+        # === Below: classification + inversion path (USE_CLASSIFY=True) ===
         # --- Step 0: classify each prompt with product reference image ---
         unique_original_prompts = list(dict.fromkeys(
             [m.get("original_prompt", p) for m, p in zip(metadata, prompts)]
@@ -576,7 +610,7 @@ def product_consistency_score(device):
             else:
                 original_to_ref[up] = None
         ref_imgs_list = [original_to_ref[up] for up in unique_original_prompts]
-        unique_has_product = asyncio.run(_classify_batch_has_product(unique_original_prompts, ref_imgs_list))
+        unique_has_product = asyncio.run(_classify_batch_has_product(unique_original_prompts, ref_imgs_list, sem))
         original_to_has_product = dict(zip(unique_original_prompts, unique_has_product))
         has_product = [original_to_has_product.get(m.get("original_prompt", p), True)
                        for p, m in zip(prompts, metadata)]
@@ -612,7 +646,7 @@ def product_consistency_score(device):
             else:
                 all_ref_pils.append(all_gen_pils[-1])
 
-        raw_scores = asyncio.run(_score_batch(all_gen_pils, all_ref_pils, all_product_names))
+        raw_scores = asyncio.run(_score_batch(all_gen_pils, all_ref_pils, all_product_names, sem))
 
         # --- Step 2: product → keep raw score; non-product → invert (1 - score) ---
         scores = []

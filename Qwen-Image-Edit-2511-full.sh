@@ -14,8 +14,8 @@ accelerate launch --config_file /data/phd/kousiqi/zhitao/DiffSynth-Studio/exampl
   --num_epochs 50 \
   --save_steps 1000 \
   --remove_prefix_in_ckpt "pipe.dit." \
-  --resume_from_checkpoint "/data/phd/kousiqi/zhitao/full_all_products_rewrite_expanded_ultimate_with_ultraedit500k_resume_110000/step-22000.safetensors" \
-  --output_path "/data/phd/kousiqi/zhitao/full_all_products_rewrite_expanded_ultimate_with_ultraedit500k_resume_132000" \
+  --resume_from_checkpoint "/data/phd/kousiqi/zhitao/full_all_products_rewrite_expanded_ultimate_with_ultraedit500k_captioned_resume_89000/step-23000.safetensors" \
+  --output_path "/data/phd/kousiqi/zhitao/full_all_products_rewrite_expanded_ultimate_with_ultraedit500k_captioned_resume_112000" \
   --trainable_models "dit" \
   --use_gradient_checkpointing \
   --dataset_num_workers 0 \

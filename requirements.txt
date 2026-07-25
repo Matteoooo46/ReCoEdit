@@ -1,0 +1,30 @@
+# Core
+torch>=2.6.0
+transformers>=4.40.0
+diffusers>=0.33.0
+accelerate>=0.30.0
+
+# LoRA & Training
+peft>=0.12.0
+datasets>=2.20.0
+
+# Flow-GRPO dependencies
+ml_collections>=0.1.1
+omegaconf>=2.3.0
+einops>=0.7.0
+
+# VLM Reward & Inference
+openai>=1.30.0          # AsyncOpenAI for VLM calls
+httpx>=0.27.0
+Pillow>=10.0.0
+vllm>=0.5.0             # vLLM for reward server
+
+# SFT Training (DiffSynth-Studio / LLaMA-Factory)
+# See their respective requirements:
+# https://github.com/modelscope/DiffSynth-Studio
+# https://github.com/hiyouga/LLaMA-Factory
+
+# Utilities
+numpy>=1.24.0
+tqdm>=4.65.0
+safetensors>=0.4.0

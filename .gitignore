@@ -1,6 +1,10 @@
 # ============================================
 # 模型权重 & Checkpoints（太大，不归 git 管）
 # ============================================
+*.pth
+*.safetensors
+*.bin
+*.ckpt
 models/
 flow_grpo/best_checkpoints/
 flow_grpo/dataset/
@@ -79,6 +83,17 @@ qwen_inference_results_single/
 # ============================================
 error.txt
 modified_prompt.txt
+
+# ============================================
+# 本地工具脚本（不发布到 GitHub）
+# ============================================
+build_*.py
+run_*.sh
+start_vllm_reward*.sh
+qwenvl_rewrite.py
+split_remaining_caption_data.py
+test_reward.py
+Qwen-Image-Edit-2511-full.sh
 
 # ============================================
 # 其他大文件

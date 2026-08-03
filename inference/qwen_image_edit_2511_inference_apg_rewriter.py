@@ -57,8 +57,8 @@ PROMPT_LOG_PATH = os.path.join(REPORT_DIR, f"{product_name}_prompt_rewrite_log.j
 # ==========================================
 # 1.1 QwenVL Prompt 改写模型配置（本地 Qwen3-VL-8B + LoRA）
 # ==========================================
-REWRITER_BASE_MODEL = "/data/phd/kousiqi/zhitao/models/Qwen3-VL-8B-Instruct"
-REWRITER_LORA_PATH = "/data/phd/kousiqi/zhitao/qwen3-vl-8b-sft-v2/checkpoint-10000"
+REWRITER_BASE_MODEL = "Qwen/Qwen3-VL-8B-Instruct"
+REWRITER_LORA_PATH = "Matteoooo46/ReCoEdit-rewriter"
 
 # 全局变量，在 main 中初始化
 rewriter_model = None
@@ -418,22 +418,28 @@ def write_viewer_outputs(products_config):
 # 2. 初始化模型
 # ==========================================
 print("正在加载模型和LoRA，请稍候...")
+from huggingface_hub import snapshot_download
+
+# Download base model from HuggingFace (cached after first run)
+BASE_MODEL_DIR = snapshot_download("Qwen/Qwen-Image-Edit-2511")
+RL_LORA_DIR    = snapshot_download("Matteoooo46/ReCoEdit-RL")
+
 MODEL_CONFIG_PATHS = {
     "dit": [
-        "/data/phd/kousiqi/kousiqi/models--Qwen--Qwen-Image-Edit-2511/transformer/diffusion_pytorch_model-00001-of-00005.safetensors",
-        "/data/phd/kousiqi/kousiqi/models--Qwen--Qwen-Image-Edit-2511/transformer/diffusion_pytorch_model-00002-of-00005.safetensors",
-        "/data/phd/kousiqi/kousiqi/models--Qwen--Qwen-Image-Edit-2511/transformer/diffusion_pytorch_model-00003-of-00005.safetensors",
-        "/data/phd/kousiqi/kousiqi/models--Qwen--Qwen-Image-Edit-2511/transformer/diffusion_pytorch_model-00004-of-00005.safetensors",
-        "/data/phd/kousiqi/kousiqi/models--Qwen--Qwen-Image-Edit-2511/transformer/diffusion_pytorch_model-00005-of-00005.safetensors"
+        f"{BASE_MODEL_DIR}/transformer/diffusion_pytorch_model-00001-of-00005.safetensors",
+        f"{BASE_MODEL_DIR}/transformer/diffusion_pytorch_model-00002-of-00005.safetensors",
+        f"{BASE_MODEL_DIR}/transformer/diffusion_pytorch_model-00003-of-00005.safetensors",
+        f"{BASE_MODEL_DIR}/transformer/diffusion_pytorch_model-00004-of-00005.safetensors",
+        f"{BASE_MODEL_DIR}/transformer/diffusion_pytorch_model-00005-of-00005.safetensors",
     ],
     "text_encoder": [
-        "/data/phd/kousiqi/kousiqi/models--Qwen--Qwen-Image-Edit-2511/text_encoder/model-00001-of-00004.safetensors",
-        "/data/phd/kousiqi/kousiqi/models--Qwen--Qwen-Image-Edit-2511/text_encoder/model-00002-of-00004.safetensors",
-        "/data/phd/kousiqi/kousiqi/models--Qwen--Qwen-Image-Edit-2511/text_encoder/model-00003-of-00004.safetensors",
-        "/data/phd/kousiqi/kousiqi/models--Qwen--Qwen-Image-Edit-2511/text_encoder/model-00004-of-00004.safetensors"
+        f"{BASE_MODEL_DIR}/text_encoder/model-00001-of-00004.safetensors",
+        f"{BASE_MODEL_DIR}/text_encoder/model-00002-of-00004.safetensors",
+        f"{BASE_MODEL_DIR}/text_encoder/model-00003-of-00004.safetensors",
+        f"{BASE_MODEL_DIR}/text_encoder/model-00004-of-00004.safetensors",
     ],
-    "vae": "/data/phd/kousiqi/kousiqi/models--Qwen--Qwen-Image-Edit-2511/vae/diffusion_pytorch_model.safetensors",
-    "processor": "/data/phd/kousiqi/kousiqi/models--Qwen--Qwen-Image-Edit-2511/processor",
+    "vae":       f"{BASE_MODEL_DIR}/vae/diffusion_pytorch_model.safetensors",
+    "processor": f"{BASE_MODEL_DIR}/processor",
 }
 
 vram_config = {
@@ -461,8 +467,8 @@ pipe = QwenImagePipeline.from_pretrained(
 )
 
 # GRPO round2 best checkpoint (eager-cloud-11, epoch 28, reward peak 0.491)
-lora_path = "/data/phd/kousiqi/zhitao/flow_grpo/best_checkpoints/grpo_round2_epoch28_for_inference.safetensors"
-lora_path = "/data/phd/kousiqi/zhitao/flow_grpo/best_checkpoints/grpo_round2_epoch28_for_inference.safetensors"
+# lora_path = "/data/phd/kousiqi/zhitao/flow_grpo/best_checkpoints/grpo_round2_epoch28_for_inference.safetensors"
+lora_path = f"{RL_LORA_DIR}/adapter_model.safetensors"
 pipe.load_lora(pipe.dit, lora_path)
 
 # ==========================================

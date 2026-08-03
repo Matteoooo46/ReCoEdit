@@ -57,8 +57,8 @@ PROMPT_LOG_PATH = os.path.join(REPORT_DIR, f"{product_name}_prompt_rewrite_log.j
 # ==========================================
 # 1.1 QwenVL Prompt 改写模型配置（本地 Qwen3-VL-8B + LoRA）
 # ==========================================
-REWRITER_BASE_MODEL = "/path/to/data"
-REWRITER_LORA_PATH = "/path/to/data"
+REWRITER_BASE_MODEL = "Qwen/Qwen3-VL-8B-Instruct"
+REWRITER_LORA_PATH = "Matteoooo46/ReCoEdit-rewriter"
 
 # 全局变量，在 main 中初始化
 rewriter_model = None
@@ -418,22 +418,28 @@ def write_viewer_outputs(products_config):
 # 2. 初始化模型
 # ==========================================
 print("正在加载模型和LoRA，请稍候...")
+from huggingface_hub import snapshot_download
+
+# Download base model from HuggingFace (cached after first run)
+BASE_MODEL_DIR = snapshot_download("Qwen/Qwen-Image-Edit-2511")
+RL_LORA_DIR    = snapshot_download("Matteoooo46/ReCoEdit-RL")
+
 MODEL_CONFIG_PATHS = {
     "dit": [
-        "/path/to/data",
-        "/path/to/data",
-        "/path/to/data",
-        "/path/to/data",
-        "/path/to/data"
+        f"{BASE_MODEL_DIR}/transformer/diffusion_pytorch_model-00001-of-00005.safetensors",
+        f"{BASE_MODEL_DIR}/transformer/diffusion_pytorch_model-00002-of-00005.safetensors",
+        f"{BASE_MODEL_DIR}/transformer/diffusion_pytorch_model-00003-of-00005.safetensors",
+        f"{BASE_MODEL_DIR}/transformer/diffusion_pytorch_model-00004-of-00005.safetensors",
+        f"{BASE_MODEL_DIR}/transformer/diffusion_pytorch_model-00005-of-00005.safetensors",
     ],
     "text_encoder": [
-        "/path/to/data",
-        "/path/to/data",
-        "/path/to/data",
-        "/path/to/data"
+        f"{BASE_MODEL_DIR}/text_encoder/model-00001-of-00004.safetensors",
+        f"{BASE_MODEL_DIR}/text_encoder/model-00002-of-00004.safetensors",
+        f"{BASE_MODEL_DIR}/text_encoder/model-00003-of-00004.safetensors",
+        f"{BASE_MODEL_DIR}/text_encoder/model-00004-of-00004.safetensors",
     ],
-    "vae": "/path/to/data",
-    "processor": "/path/to/data",
+    "vae":       f"{BASE_MODEL_DIR}/vae/diffusion_pytorch_model.safetensors",
+    "processor": f"{BASE_MODEL_DIR}/processor",
 }
 
 vram_config = {
@@ -461,8 +467,8 @@ pipe = QwenImagePipeline.from_pretrained(
 )
 
 # GRPO round2 best checkpoint (eager-cloud-11, epoch 28, reward peak 0.491)
-lora_path = "/path/to/data"
-lora_path = "/path/to/data"
+# lora_path = "/path/to/data"
+lora_path = f"{RL_LORA_DIR}/adapter_model.safetensors"
 pipe.load_lora(pipe.dit, lora_path)
 
 # ==========================================

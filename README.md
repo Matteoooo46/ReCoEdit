@@ -4,7 +4,7 @@
 
 **ReCoEdit** improves product consistency in AI image editing through a two-stage alignment pipeline: a prompt rewriter that generates editing instructions from product data, and RL-based consistency alignment (Flow-GRPO) that optimizes the diffusion model to faithfully preserve product identity during editing.
 
-[🌐 Blog](https://matteoooo46.github.io/ReCoEdit) | [🤗 Models]()
+[🌐 Blog](https://matteoooo46.github.io/ReCoEdit) | [🤗 RL LoRA](https://huggingface.co/Matteoooo46/ReCoEdit-RL) | [🤗 Rewriter](https://huggingface.co/Matteoooo46/ReCoEdit-rewriter)
 
 </div>
 

@@ -132,11 +132,23 @@ bash scripts/start_training_product_consistency.sh
 ### 4. Inference
 
 ```bash
-# APG + Rewriter inference (recommended)
-python inference/qwen_image_edit_2511_inference_apg_rewriter.py
+# APG only (faster, no rewriter)
+python inference/qwen_image_edit_2511_inference_apg.py \
+    --input_image product.jpg \
+    --prompt "把产品放到户外花园场景中" \
+    --output result.png
 
-# Batch generation on 8 GPUs
-bash scripts/run_new_rl_inference_8gpu.sh
+# APG + Rewriter (recommended, better product consistency)
+python inference/qwen_image_edit_2511_inference_apg_rewriter.py \
+    --input_image product.jpg \
+    --prompt "把产品放到户外花园场景中" \
+    --output result.png
+
+# Multiple reference images
+python inference/qwen_image_edit_2511_inference_apg_rewriter.py \
+    --input_image ref1.jpg ref2.jpg \
+    --prompt "..." \
+    --output result.png
 ```
 
 ---

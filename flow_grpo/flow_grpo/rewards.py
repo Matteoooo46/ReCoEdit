@@ -421,7 +421,9 @@ def product_consistency_score(device):
     from io import BytesIO
     from openai import AsyncOpenAI
 
-    VLM_BASE_URL = "http://10.80.243.156:8080/v1"
+    # Set VLM_BASE_URL to your VLM server (e.g. Qwen3-VL-30B served via vLLM).
+    # Example: "http://localhost:8080/v1" or the URL from an environment variable.
+    VLM_BASE_URL = os.environ.get("RECOEDIT_VLM_URL", "http://localhost:8080/v1")
     VLM_MODEL = "Qwen3-VL-30B-A3B-Instruct"
 
     SCORING_PROMPT = (

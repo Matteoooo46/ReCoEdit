@@ -1,0 +1,67 @@
+# LLaMA-Factory SFT config for the ReCoEdit prompt rewriter (Qwen3-VL-8B + LoRA).
+#
+# Fill in the paths marked with `# EDIT` below, then run:
+#   llamafactory-cli train scripts/rewriter_sft_qwen3vl_8b.yaml
+#
+# See https://github.com/hiyouga/LLaMA-Factory for LLaMA-Factory installation
+# and how to register your dataset in `LLaMA-Factory/data/dataset_info.json`.
+
+# ==========================================
+# 1. Model
+# ==========================================
+model_name_or_path: Qwen/Qwen3-VL-8B-Instruct       # HuggingFace id, or a local path
+
+# Qwen3-VL requires this specific chat template.
+template: qwen3_vl_nothink
+
+# ==========================================
+# 2. Training mode
+# ==========================================
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_target: all
+
+# ==========================================
+# 3. Dataset
+# ==========================================
+# `dataset_dir` points at LLaMA-Factory's `data/` directory (where `dataset_info.json` lives).
+# `dataset` is the *name* you registered inside `dataset_info.json`, not a file path.
+dataset_dir: /path/to/LLaMA-Factory/data           # EDIT
+dataset: my_rewriter_dataset                       # EDIT — matches your dataset_info.json entry
+cutoff_len: 4096
+max_samples: 2000000
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+# ==========================================
+# 4. Output
+# ==========================================
+output_dir: ./outputs/qwen3-vl-8b-rewriter         # EDIT
+logging_steps: 10
+save_steps: 500
+plot_loss: true
+overwrite_output_dir: true
+# resume_from_checkpoint: /path/to/checkpoint-N    # Uncomment to resume
+report_to: wandb                                   # Requires $WANDB_API_KEY
+run_name: qwen3-vl-8b-rewriter
+
+# ==========================================
+# 5. Training hyperparameters
+# ==========================================
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 8
+learning_rate: 1.0e-4
+num_train_epochs: 10.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true
+ddp_timeout: 180000000
+
+# ==========================================
+# 6. Evaluation
+# ==========================================
+val_size: 0.1
+per_device_eval_batch_size: 1
+eval_strategy: steps
+eval_steps: 500

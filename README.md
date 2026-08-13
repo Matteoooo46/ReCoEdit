@@ -14,7 +14,7 @@
 
 E-commerce product image editing requires two capabilities: (1) generating accurate editing prompts from raw product metadata, and (2) preserving product identity (color, shape, logos) after editing. ReCoEdit addresses both:
 
-![Method Overview](assets/method_overview.png)
+![Method Overview]
 
 1. **Prompt Rewriter** (Qwen3-VL-8B + LoRA): An SFT-trained VLM that takes a product reference image and raw prompt, then outputs a structured editing prompt (120-150 chars, Chinese) optimized for Qwen-Image-Edit.
 

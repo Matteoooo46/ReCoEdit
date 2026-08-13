@@ -63,11 +63,9 @@ ReCoEdit/
 │   ├── config/             # Training configs (GRPO, product consistency)
 │   ├── scripts/            # Training entry points & launchers
 │   └── docs/               # Training reports
-├── rewriter/               # Prompt rewriter SFT configs (LLaMA-Factory)
-├── inference/              # Inference scripts (APG, rewriter, batch generation)
-├── scripts/                # Shell launchers for training & inference
-├── reward-server/          # GenEval reward server
-└── assets/                 # Figures, diagrams
+├── inference/              # Two clean CLI inference scripts (APG, APG+Rewriter)
+├── scripts/                # SFT launchers + rewriter LLaMA-Factory config
+└── docs/                   # GitHub Pages blog
 ```
 
 ---
@@ -105,15 +103,18 @@ Download models to a local `models/` directory before training.
 ### 1. SFT Training (Prompt Rewriter)
 
 ```bash
-# Using LLaMA-Factory with config in rewriter/
-llamafactory-cli train rewriter/qwen3-vl-8b-sft.yaml
+# Fill in the paths marked "EDIT" in the config first, then:
+llamafactory-cli train scripts/rewriter_sft_qwen3vl_8b.yaml
 ```
 
 ### 2. SFT Training (Qwen-Image-Edit)
 
 ```bash
-# Full fine-tuning
-bash Qwen-Image-Edit-2511-full.sh
+# Full fine-tuning (path variables are required)
+export DIFFSYNTH_DIR=/path/to/DiffSynth-Studio
+export TRAIN_METADATA=/path/to/metadata.json
+export OUTPUT_DIR=/path/to/output
+bash scripts/Qwen-Image-Edit-2511-full.sh
 
 # LoRA fine-tuning
 bash scripts/Qwen-Image-Edit-2511.sh
@@ -122,11 +123,13 @@ bash scripts/Qwen-Image-Edit-2511.sh
 ### 3. RL Training (Consistency Alignment)
 
 ```bash
-# Start VLM reward server first
-bash start_vllm_reward.sh
+# Point the reward function at your VLM server (Qwen3-VL-30B via vLLM):
+export RECOEDIT_VLM_URL=http://your-vlm-server:8080/v1
 
-# Launch GRPO training with product consistency reward
-bash scripts/start_training_product_consistency.sh
+# Launch GRPO training with the product-consistency reward
+cd flow_grpo
+torchrun --standalone --nproc_per_node=8 scripts/train_qwenimage_edit.py \
+    --config config/grpo.py:counting_qwenimage_edit_8gpu_product_consistency
 ```
 
 ### 4. Inference

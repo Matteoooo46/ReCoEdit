@@ -4,10 +4,10 @@
 
 | 参数 | 值 |
 |------|-----|
-| 训练脚本 | `/path/to/data` |
-| 基座模型 | `/path/to/data` |
-| SFT 权重 | `/path/to/data` |
-| 训练数据集 | `/path/to/data`|
+| 训练脚本 | `flow_grpo/scripts/train_qwenimage_edit.py` |
+| 基座模型 | `Qwen/Qwen-Image-Edit-2511` |
+| SFT 权重 | 用户 SFT 阶段产出的 `.safetensors` 权重 |
+| 训练数据集 | 用户自建的商品一致性数据集 |
 
 ## 训练参数
 
@@ -39,7 +39,7 @@
 |------|-----|
 | Reward 类型 | 1-5 分连续评分 |
 | VLM 模型 | Qwen3-VL-30B-A3B-Instruct |
-| VLM 地址 | 127.0.0.1:8080 |
+| VLM 地址 | 通过 `RECOEDIT_VLM_URL` 环境变量配置 |
 | 评分 Prompt | CoT 逐步分析 + Score: X 输出 |
 | 归一化 | `(score - 1) / 4` → 0.0-1.0 |
 | 分类/反转 | 无（纯 1-5 分） |

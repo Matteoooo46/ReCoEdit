@@ -1,24 +1,21 @@
 ---
-layout: default
+layout: page
 title: ReCoEdit
+description: Rewriter-Guided Consistency Alignment for Product Image Editing
 ---
 
-<div align="center">
-
-<h1>ReCoEdit</h1>
-
-<h3>Rewriter-Guided Consistency Alignment for Product Image Editing</h3>
-
-<p><strong>Change the scene. Preserve the product.</strong></p>
-
-<p>
-  <a href="https://huggingface.co/spaces/Matteoooo46/ReCoEdit-Demo"><strong>Try the Demo</strong></a> ·
-  <a href="https://github.com/Matteoooo46/ReCoEdit"><strong>GitHub</strong></a> ·
-  <a href="https://huggingface.co/Matteoooo46/ReCoEdit-RL"><strong>RL Checkpoint</strong></a> ·
-  <a href="https://huggingface.co/Matteoooo46/ReCoEdit-rewriter"><strong>Rewriter Checkpoint</strong></a>
-</p>
-
-</div>
+<section class="project-hero">
+  <p class="project-eyebrow">Product-aware image editing</p>
+  <h1>ReCoEdit</h1>
+  <p class="project-subtitle">Rewriter-Guided Consistency Alignment for Product Image Editing</p>
+  <p class="project-kicker">Change the scene. Preserve the product.</p>
+  <div class="project-actions">
+    <a href="https://huggingface.co/spaces/Matteoooo46/ReCoEdit-Demo">Try the Demo</a>
+    <a href="https://github.com/Matteoooo46/ReCoEdit">GitHub</a>
+    <a href="https://huggingface.co/Matteoooo46/ReCoEdit-RL">RL Checkpoint</a>
+    <a href="https://huggingface.co/Matteoooo46/ReCoEdit-rewriter">Rewriter Checkpoint</a>
+  </div>
+</section>
 
 <!--
 TODO: Add a project-page hero image to docs/assets/recoedit_hero.png, then uncomment:
@@ -85,7 +82,9 @@ The product-consistency reward rises from the SFT initialization to its peak dur
 
 This is an absolute gain of **0.458** on the internal normalized reward, corresponding to a **21.8×** increase over the initialization value.
 
-> The value above is the reward optimized by the RL pipeline. Dataset statistics, independent benchmarks, ablations, and sample counts will be added when the evaluation release is ready.
+<div class="project-note">
+The value above is the reward optimized by the RL pipeline. Dataset statistics, independent benchmarks, ablations, and sample counts will be added when the evaluation release is ready.
+</div>
 
 ## Qualitative Showcase
 

@@ -1,0 +1,15 @@
+- title: Overview
+  url: /
+  hue: "#2E86AB"
+
+- title: Demo
+  url: https://huggingface.co/spaces/Matteoooo46/ReCoEdit-Demo
+  hue: "#8EA604"
+
+- title: Models
+  url: https://huggingface.co/Matteoooo46
+  hue: "#E59500"
+
+- title: GitHub
+  url: https://github.com/Matteoooo46/ReCoEdit
+  hue: "#9F00CE"

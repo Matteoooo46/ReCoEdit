@@ -1,0 +1,16 @@
+{% if include.embedded %}<ul class="list">{% else %}<ul class="list primary">{% endif %}
+  {% for item in include.nav %}
+    {% assign is_external = false %}
+    {% if item.url contains '://' %}{% assign is_external = true %}{% endif %}
+    <li class="item">
+      <div class="item-controls">
+        <a href="{% if is_external %}{{ item.url }}{% else %}{{ item.url | relative_url }}{% endif %}"{% if is_external %} target="_blank" rel="noopener noreferrer"{% endif %}>
+          {% if item.icon %}<img src="{{ item.icon | relative_url }}" alt="">{% endif %}
+          <p{% if item.hue %} style="color: {{ item.hue }}"{% endif %}>{{ item.title }}</p>
+        </a>
+        {% if item.subnav %}<a class="button-submenu" href="#" aria-label="Toggle submenu"><i class="arrow"></i></a>{% endif %}
+      </div>
+      {% if item.subnav %}{% include nav.html nav=item.subnav embedded=true %}{% endif %}
+    </li>
+  {% endfor %}
+</ul>

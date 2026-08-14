@@ -4,10 +4,13 @@
 
 **ReCoEdit helps image editing models change the scene without changing the product.**
 
-[Online Demo](https://huggingface.co/spaces/Matteoooo46/ReCoEdit-Demo) ·
-[Project Blog](https://matteoooo46.github.io/ReCoEdit) ·
-[RL Checkpoint](https://huggingface.co/Matteoooo46/ReCoEdit-RL) ·
-[Rewriter Checkpoint](https://huggingface.co/Matteoooo46/ReCoEdit-rewriter)
+<p>
+  <a href="https://huggingface.co/spaces/Matteoooo46/ReCoEdit-Demo"><img src="https://img.shields.io/badge/🤗-Online%20Demo-blue"></a>
+  <a href="https://matteoooo46.github.io/ReCoEdit"><img src="https://img.shields.io/badge/📄-Project%20Blog-black"></a>
+  <a href="https://huggingface.co/Matteoooo46/ReCoEdit-RL"><img src="https://img.shields.io/badge/🤗-RL%20Checkpoint-yellow"></a>
+  <a href="https://huggingface.co/Matteoooo46/ReCoEdit-rewriter"><img src="https://img.shields.io/badge/🤗-Rewriter%20Checkpoint-yellow"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg"></a>
+</p>
 
 </div>
 
@@ -19,7 +22,7 @@ TODO: Add a qualitative teaser to assets/recoedit_teaser.png, then uncomment:
 </p>
 -->
 
-##概述
+## Overview
 
 Product image editing must satisfy two goals at the same time: follow the requested edit and preserve the identity of the reference product. In practice, colors shift, logos disappear, patterns change, and shapes deform when the model focuses too heavily on the new scene.
 
@@ -42,11 +45,11 @@ flowchart LR
     G -->|"GRPO update"| D
 ```
 
-## News
+## 📢 News
 
 - **August 2026:** The [ReCoEdit online demo](https://huggingface.co/spaces/Matteoooo46/ReCoEdit-Demo) is now available on Hugging Face Spaces.
 
-## Online Demo
+## 🌐 Online Demo
 
 Try the complete ReCoEdit workflow without setting up a local environment:
 
@@ -54,7 +57,7 @@ Try the complete ReCoEdit workflow without setting up a local environment:
 
 The demo provides an accessible entry point for product-image editing with the released ReCoEdit components.
 
-## Key Results
+## 📊 Key Results
 
 The internal product-consistency reward improves substantially during RL training:
 
@@ -68,12 +71,12 @@ The internal product-consistency reward improves substantially during RL trainin
 - Reward judge: [Qwen3-VL-30B-A3B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-30B-A3B-Instruct)
 - Training configuration: 8 GPUs, bf16, FSDP, activation checkpointing, and optimizer offload
 
-See the [RL training report](flow_grpo/docs/RL_training_report.md) for the recorded training dynamics and configuration.
+Full epoch-by-epoch reward curve is in [**TRAIN.md**](TRAIN.md).
 
 > [!NOTE]
 > The value above is the reward used by the RL pipeline. Dataset statistics, independent benchmarks, ablations, and qualitative comparisons will be added after they are ready.
 
-## Quick Start
+## 🔥 Quick Start
 
 ### Option 1: Use the online demo
 
@@ -91,17 +94,16 @@ conda create -n recoedit python=3.10 -y
 conda activate recoedit
 
 pip install -r requirements.txt
-pip install -e ./flow_grpo
 ```
 
-The inference implementation also uses [DiffSynth-Studio](https://github.com/modelscope/DiffSynth-Studio):
+The inference implementation also uses [DiffSynth-Studio](https://github.com/modelscope/DiffSynth-Studio) and an APG guidance helper from the upstream Flow-GRPO fork of the pipeline:
 
 ```bash
 git clone https://github.com/modelscope/DiffSynth-Studio.git third_party/DiffSynth-Studio
 pip install -e third_party/DiffSynth-Studio
-```
 
-The APG inference scripts import the project APG helper described in [`APG_CFG_详解.md`](APG_CFG_详解.md). Make sure that helper is available on `PYTHONPATH` before running local inference.
+# APG helper — expose whichever apg_guidance.py you use on PYTHONPATH.
+```
 
 #### 2. Run APG inference
 
@@ -132,7 +134,7 @@ python inference/qwen_image_edit_2511_inference_apg_rewriter.py \
     --output outputs/result.png
 ```
 
-## Model Zoo
+## 🤗 Model Zoo
 
 | Component | Base model | Released weights | Role |
 |---|---|---|---|
@@ -140,74 +142,23 @@ python inference/qwen_image_edit_2511_inference_apg_rewriter.py \
 | Prompt rewriter | [Qwen3-VL-8B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct) | [ReCoEdit-rewriter](https://huggingface.co/Matteoooo46/ReCoEdit-rewriter) | Structured editing-prompt generation |
 | Reward judge | [Qwen3-VL-30B-A3B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-30B-A3B-Instruct) | — | Product-consistency scoring during RL |
 
-##培训
+## 🔥 Train & Eval
 
-The complete training workflow contains three stages. You can use only the stages relevant to your experiment.
+- **Training** — full three-stage pipeline (rewriter SFT → edit-model SFT → consistency RL), including data format, hyperparameters, and launch commands: [**TRAIN.md**](TRAIN.md).
+- **Evaluation** — evaluation protocol and benchmarks: [**EVAL.md**](EVAL.md) *(coming soon)*.
 
-### 1. Prompt Rewriter SFT
+## 🙏 Acknowledgments
 
-Register your dataset in LLaMA-Factory, then replace the values marked `EDIT` in [`scripts/rewriter_sft_qwen3vl_8b.yaml`](scripts/rewriter_sft_qwen3vl_8b.yaml):
+ReCoEdit builds on the following open-source projects and models. **We do not vendor their code into this repository** — you install them separately when training. Please cite them if you use ReCoEdit:
 
-```bash
-llamafactory-cli train scripts/rewriter_sft_qwen3vl_8b.yaml
-```
-
-### 2. Qwen-Image-Edit SFT
-
-```bash
-export DIFFSYNTH_DIR=/path/to/DiffSynth-Studio
-export TRAIN_METADATA=/path/to/metadata.json
-export OUTPUT_DIR=/path/to/output
-
-# Full-parameter training
-bash scripts/Qwen-Image-Edit-2511-full.sh
-
-# Or LoRA training
-bash scripts/Qwen-Image-Edit-2511.sh
-```
-
-### 3. GRPO Consistency Alignment
-
-Start an OpenAI-compatible vLLM server for the reward judge and configure its endpoint:
-
-```bash
-cp .env.example .env
-# Edit .env, then load it:
-source .env
-```
-
-Before launching, update the dataset, model, SFT checkpoint, and output paths in `counting_qwenimage_edit_8gpu_product_consistency` inside [`flow_grpo/config/grpo.py`](flow_grpo/config/grpo.py).
-
-```bash
-cd flow_grpo
-torchrun --standalone --nproc_per_node=8 scripts/train_qwenimage_edit.py \
-    --config config/grpo.py:counting_qwenimage_edit_8gpu_product_consistency
-```
-
-## Evaluation
-
-<!-- TODO: Add evaluation-set details. -->
-
-The current repository reports the RL reward curve in the [training report](flow_grpo/docs/RL_training_report.md). A reproducible evaluation protocol will be added in a future update.
-
-## Benchmarks
-
-<!--
-TODO: Add side-by-side Input / SFT / ReCoEdit comparisons here.
-path: assets/benchmarks/
--->
-
-## Acknowledgments
-
-ReCoEdit builds on the following open-source projects and models:
-
-- [Flow-GRPO](https://github.com/yifan123/flow_grpo) — reinforcement learning for flow-matching models
+- [Flow-GRPO](https://github.com/yifan123/flow_grpo) — reinforcement learning for flow-matching models (used in stage 3)
 - [Qwen-Image](https://github.com/QwenLM/Qwen-Image) — base image-editing model family
 - [Qwen3-VL](https://github.com/QwenLM/Qwen3-VL) — prompt rewriter and product-consistency judge
 - [LLaMA-Factory](https://github.com/hiyouga/LLaMA-Factory) — prompt-rewriter SFT
 - [DiffSynth-Studio](https://github.com/modelscope/DiffSynth-Studio) — image-model training and inference
+- [vLLM](https://github.com/vllm-project/vllm) — serves the reward VLM during RL
 
-## Citation
+## ✍️ Citation
 
 If ReCoEdit is useful for your work, please cite the repository:
 
@@ -220,6 +171,6 @@ If ReCoEdit is useful for your work, please cite the repository:
 }
 ```
 
-## License
+## 📜 License
 
 This project is released under the [MIT License](LICENSE).

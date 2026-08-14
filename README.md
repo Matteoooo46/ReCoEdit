@@ -19,7 +19,7 @@ TODO: Add a qualitative teaser to assets/recoedit_teaser.png, then uncomment:
 </p>
 -->
 
-## Overview
+##概述
 
 Product image editing must satisfy two goals at the same time: follow the requested edit and preserve the identity of the reference product. In practice, colors shift, logos disappear, patterns change, and shapes deform when the model focuses too heavily on the new scene.
 
@@ -140,7 +140,7 @@ python inference/qwen_image_edit_2511_inference_apg_rewriter.py \
 | Prompt rewriter | [Qwen3-VL-8B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct) | [ReCoEdit-rewriter](https://huggingface.co/Matteoooo46/ReCoEdit-rewriter) | Structured editing-prompt generation |
 | Reward judge | [Qwen3-VL-30B-A3B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-30B-A3B-Instruct) | — | Product-consistency scoring during RL |
 
-## Training
+##培训
 
 The complete training workflow contains three stages. You can use only the stages relevant to your experiment.
 
@@ -184,38 +184,18 @@ torchrun --standalone --nproc_per_node=8 scripts/train_qwenimage_edit.py \
     --config config/grpo.py:counting_qwenimage_edit_8gpu_product_consistency
 ```
 
-## Data
-
-<!-- TODO: Add the released dataset link, license, statistics, and example schema. -->
-
-Dataset documentation and a minimal example will be added here when the data release is ready.
-
 ## Evaluation
 
-<!-- TODO: Add evaluation-set details, independent metrics, ablations, and sample counts. -->
+<!-- TODO: Add evaluation-set details. -->
 
 The current repository reports the RL reward curve in the [training report](flow_grpo/docs/RL_training_report.md). A reproducible evaluation protocol will be added in a future update.
 
-## Qualitative Results
+## Benchmarks
 
 <!--
 TODO: Add side-by-side Input / SFT / ReCoEdit comparisons here.
-Recommended path: assets/qualitative/
+path: assets/benchmarks/
 -->
-
-## Repository Structure
-
-```text
-ReCoEdit/
-├── flow_grpo/             # RL framework, rewards, configs, and training scripts
-├── inference/             # APG and APG + Rewriter inference entry points
-├── scripts/               # Rewriter and image-editor SFT launchers
-├── docs/                  # GitHub Pages project blog
-├── assets/                # README figures and qualitative results
-├── APG_CFG_详解.md         # APG and CFG implementation notes
-├── requirements.txt
-└── README.md
-```
 
 ## Acknowledgments
 
@@ -235,7 +215,7 @@ If ReCoEdit is useful for your work, please cite the repository:
 @software{recoedit2025,
   title  = {ReCoEdit: Rewriter-Guided Consistency Alignment for Product Image Editing},
   author = {Matteoooo46},
-  year   = {2025},
+  year   = {2026},
   url    = {https://github.com/Matteoooo46/ReCoEdit}
 }
 ```

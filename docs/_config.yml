@@ -3,15 +3,24 @@ description: "Rewriter-Guided Consistency Alignment for Product Image Editing"
 baseurl: "/ReCoEdit"
 url: "https://matteoooo46.github.io"
 
-# jekyll-theme-minimal is on the supported-themes list, so
-# GitHub Pages "Deploy from a branch" builds it out of the box.
-theme: jekyll-theme-minimal
+# Simplex is loaded as a remote theme so this project keeps working with
+# GitHub Pages' existing "Deploy from a branch" setup.
+remote_theme: andreondra/jekyll-theme-simplex@25b620ad4b1ecf649307b12669e164070d3fc7da
+plugins:
+  - jekyll-remote-theme
 
-show_downloads: true
-github:
-  repository_url: https://github.com/Matteoooo46/ReCoEdit
+repository: Matteoooo46/ReCoEdit
+copyright: "© 2026 ReCoEdit"
+global_tags: "ReCoEdit image editing Qwen-Image-Edit reinforcement learning product consistency"
 
 markdown: kramdown
 kramdown:
   input: GFM
   math_engine: mathjax
+
+sass:
+  style: compressed
+
+exclude:
+  - Gemfile
+  - Gemfile.lock

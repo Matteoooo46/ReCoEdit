@@ -1,0 +1,16 @@
+<header class="header">
+  <section class="logo">
+    <a href="{{ '/' | relative_url }}" class="logo__link" aria-label="ReCoEdit home">
+      <span class="recoedit-mark" aria-hidden="true">R</span>
+      <span class="recoedit-wordmark">{{ site.title }}</span>
+    </a>
+  </section>
+
+  <button id="menuToggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
+    <div></div><div></div><div></div>
+  </button>
+
+  <nav class="menu" aria-label="Primary navigation">
+    {% include nav.html nav=site.data.nav %}
+  </nav>
+</header>

@@ -1,0 +1,12 @@
+<script src="{{ '/assets/js/jquery.slim.min.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/lity.min.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/tools.js' | relative_url }}"></script>
+<script>
+  (function () {
+    var toggle = document.getElementById('menuToggle');
+    if (!toggle) return;
+    toggle.addEventListener('click', function () {
+      toggle.setAttribute('aria-expanded', toggle.classList.contains('open') ? 'true' : 'false');
+    });
+  }());
+</script>

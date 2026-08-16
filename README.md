@@ -22,7 +22,7 @@ TODO: Add a qualitative teaser to assets/recoedit_teaser.png, then uncomment:
 </p>
 -->
 
-## Overview
+## 📖 Abstract
 
 Product image editing must satisfy two goals at the same time: follow the requested edit and preserve the identity of the reference product. In practice, colors shift, logos disappear, patterns change, and shapes deform when the model focuses too heavily on the new scene.
 

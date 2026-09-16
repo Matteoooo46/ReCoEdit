@@ -73,8 +73,19 @@ The internal product-consistency reward improves substantially during RL trainin
 
 Full epoch-by-epoch reward curve is in [**TRAIN.md**](TRAIN.md).
 
-> [!NOTE]
-> The value above is the reward used by the RL pipeline. Dataset statistics, independent benchmarks, ablations, and qualitative comparisons will be added after they are ready.
+### Product-region validation (22 products)
+
+On 117 matched frames successfully evaluated in all three configurations, the full trained pipeline improves Seg CLIP-I by **+0.037231 (+5.25%)** and Seg DINO-I by **+0.076935 (+22.30%)** over the base-model CFG pipeline.
+
+| Inference configuration | Seg CLIP-I ↑ | Seg DINO-I ↑ |
+|---|---:|---:|
+| Base + Original prompt + CFG | 0.709493 | 0.345001 |
+| RL + Original prompt + APG | 0.716729 | 0.351560 |
+| RL + Trained rewriter + APG | **0.746724** | **0.421937** |
+
+All runs cover 22 products × 6 frames. Valid evaluations are 124/132, 124/132 and 120/132 respectively; failures are excluded, not scored as zero. This compares complete inference configurations: weight and guidance changes are not isolated, and rewriter mode also uses anti-text prompts. These similarity metrics are distinct from the training reward above.
+
+See [**validation protocol, coverage and score files**](EVAL.md) and the [**22-product three-way image viewer**](https://js-ad.a.yximgs.com/bs2/ad-nieuwland-material/qwen_inference/comparison/random22_three_way_20260916/12120fd339b23558/index.html).
 
 ## 🔥 Quick Start
 

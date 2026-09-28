@@ -87,6 +87,28 @@ All runs cover 22 products × 6 frames. Valid evaluations are 124/132, 124/132 a
 
 See [**validation protocol, coverage and score files**](EVAL.md) and the [**22-product three-way image viewer**](https://js-ad.a.yximgs.com/bs2/ad-nieuwland-material/qwen_inference/comparison/random22_three_way_20260916/12120fd339b23558/index.html).
 
+> [!NOTE]
+> The value above is the internal RL reward, not an independent image-quality or
+> generalization metric. See [EVAL.md](EVAL.md) for measured results and caveats,
+> and [DATA_PIPELINE.md](DATA_PIPELINE.md) for data construction and audited counts.
+
+### Archived evaluation highlights
+
+- On 117 common successfully segmented frames from the 22-product comparison,
+  Base + Original + CFG scores **0.709493 / 0.345001** (Seg CLIP-I / DINO-I),
+  versus **0.746724 / 0.421937** for RL + trained rewriter + APG.
+- On all 132 frames, SFT + Original + APG improves MUSIQ from **66.833409**
+  (Base + Original + APG) to **67.677882**.
+- On 99 matched frames from exploratory selected20, trained rewriting improves
+  InternVL text-intent/image-completion over untrained rewriting by
+  **42.563 / 38.031 points**. This is not a held-out generalization claim.
+
+These compare archived configurations with guidance, prompt-processing and
+checkpoint-provenance caveats. Selected20 was outcome-selected and includes
+training products. Full denominators, negative results and judge limitations
+are in [EVAL.md](EVAL.md); machine-readable aggregates are in
+[docs/results/archived_metrics.json](docs/results/archived_metrics.json).
+
 ## 🔥 Quick Start
 
 ### Option 1: Use the online demo
@@ -156,7 +178,10 @@ python inference/qwen_image_edit_2511_inference_apg_rewriter.py \
 ## 🔥 Train & Eval
 
 - **Training** — full three-stage pipeline (rewriter SFT → edit-model SFT → consistency RL), including data format, hyperparameters, and launch commands: [**TRAIN.md**](TRAIN.md).
-- **Evaluation** — evaluation protocol and benchmarks: [**EVAL.md**](EVAL.md) *(coming soon)*.
+- **Data construction** — synthesis, captioning, editor/rewriter schemas, audited
+  statistics and portable annotation export: [**DATA_PIPELINE.md**](DATA_PIPELINE.md).
+- **Evaluation** — archived results, cohort definitions, scoring protocols and
+  validity limitations: [**EVAL.md**](EVAL.md).
 
 ## 🙏 Acknowledgments
 

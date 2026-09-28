@@ -77,13 +77,15 @@ export DIFFSYNTH_DIR=$PWD/DiffSynth-Studio
 (product-consistent transformations of a reference image).
 
 **Data format.** DiffSynth-Studio expects a metadata JSON where each entry has
-`image` (source), `edit_image` (target), and a prompt:
+`image` (target), `edit_image` (conditioning reference images), and a prompt.
+See [DATA_PIPELINE.md](DATA_PIPELINE.md) for synthesis, captioning, the separate
+editor/rewriter supervision branches, and a portable annotation exporter:
 
 ```json
 [
   {
-    "image": "path/to/source.jpg",
-    "edit_image": "path/to/target.jpg",
+    "image": "path/to/target.jpg",
+    "edit_image": ["path/to/source.jpg"],
     "prompt": "structured editing prompt..."
   }
 ]

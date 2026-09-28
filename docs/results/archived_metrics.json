@@ -1,0 +1,984 @@
+{
+  "note": "Archived configuration comparisons; see EVAL.md for cohort and validity limitations.",
+  "sources": {
+    "random22_seg": {
+      "source": "artifacts/random22_validation/summary.json",
+      "sha256": "114704761e88f2169fbac582930b5b0ec0aa275978a98212e5bb9a8535508c1d"
+    },
+    "random22_iqa": {
+      "source": "eval/random22_image_quality/summary.json",
+      "sha256": "541c4b2c963d64961a42dcf53f005f5b047b805283d2e79abc5d563c26836dd6"
+    },
+    "selected20_internvl": {
+      "source": "eval/selected20_five_way_internvl_v2/summary.json",
+      "sha256": "3bf12daeb592b468ffc1f6bb3c856f74fe6f9717184caf4ccf5697442411e204"
+    },
+    "selected20_historical": {
+      "source": "eval/exploratory20_old15_train5/current_four_way_summary.csv",
+      "sha256": "acbebb10b5fc6666c1df26b910068cef1bbfd1e5963e165e5506c66223bda2c1"
+    }
+  },
+  "results": {
+    "random22_seg": {
+      "methods": {
+        "random22_rl_original_apg": {
+          "expected": 132,
+          "evaluated": 132,
+          "valid": 124,
+          "status_counts": {
+            "ok": 124,
+            "generated_detection_failed": 8
+          },
+          "seg_clip_i": 0.7165476612903227,
+          "seg_dino_i": 0.35021827419354834
+        },
+        "random35_apg_rewrite": {
+          "expected": 132,
+          "evaluated": 132,
+          "valid": 120,
+          "status_counts": {
+            "ok": 120,
+            "generated_detection_failed": 12
+          },
+          "seg_clip_i": 0.7474562916666667,
+          "seg_dino_i": 0.41718178333333333
+        },
+        "random35_base_original_cfg": {
+          "expected": 132,
+          "evaluated": 132,
+          "valid": 124,
+          "status_counts": {
+            "ok": 124,
+            "generated_detection_failed": 8
+          },
+          "seg_clip_i": 0.7108161048387097,
+          "seg_dino_i": 0.340537
+        }
+      },
+      "common_valid": {
+        "expected": 132,
+        "valid": 117,
+        "means_and_deltas": {
+          "random22_rl_original_apg_seg_clip_i": 0.7167292307692308,
+          "random22_rl_original_apg_seg_dino_i": 0.3515604957264957,
+          "random35_apg_rewrite_seg_clip_i": 0.7467240427350428,
+          "random35_apg_rewrite_seg_dino_i": 0.42193683760683764,
+          "random35_base_original_cfg_seg_clip_i": 0.7094934529914529,
+          "random35_base_original_cfg_seg_dino_i": 0.34500145299145296,
+          "rl_original_apg_minus_base_cfg_seg_clip_i": 0.007235777777777778,
+          "rl_original_apg_minus_base_cfg_seg_dino_i": 0.006559042735042736,
+          "apg_rewrite_minus_base_cfg_seg_clip_i": 0.03723058974358974,
+          "apg_rewrite_minus_base_cfg_seg_dino_i": 0.07693538461538461,
+          "apg_rewrite_minus_rl_original_apg_seg_clip_i": 0.029994811965811965,
+          "apg_rewrite_minus_rl_original_apg_seg_dino_i": 0.07037634188034188
+        }
+      }
+    },
+    "random22_iqa": {
+      "topiq_nr": {
+        "random35_base_original_cfg": {
+          "n": 132,
+          "mean": 0.5011304698207162
+        },
+        "random22_base_original_apg": {
+          "n": 132,
+          "mean": 0.48900549497568246
+        },
+        "random22_sft_original_apg": {
+          "n": 132,
+          "mean": 0.5170775001699274
+        },
+        "random22_rl_original_apg": {
+          "n": 132,
+          "mean": 0.48119135291287396
+        },
+        "random35_apg_rewrite": {
+          "n": 132,
+          "mean": 0.4848598390817642
+        }
+      },
+      "musiq": {
+        "random35_base_original_cfg": {
+          "n": 132,
+          "mean": 66.83368954514012
+        },
+        "random22_base_original_apg": {
+          "n": 132,
+          "mean": 66.83340878920121
+        },
+        "random22_sft_original_apg": {
+          "n": 132,
+          "mean": 67.67788190552683
+        },
+        "random22_rl_original_apg": {
+          "n": 132,
+          "mean": 66.60036821076365
+        },
+        "random35_apg_rewrite": {
+          "n": 132,
+          "mean": 67.75787500901656
+        }
+      },
+      "qalign_aesthetic": {
+        "random35_base_original_cfg": {
+          "n": 132,
+          "mean": 3.7060250946969697
+        },
+        "random22_base_original_apg": {
+          "n": 132,
+          "mean": 3.7185502485795454
+        },
+        "random22_sft_original_apg": {
+          "n": 132,
+          "mean": 3.6876775568181817
+        },
+        "random22_rl_original_apg": {
+          "n": 132,
+          "mean": 3.6776677911931817
+        },
+        "random35_apg_rewrite": {
+          "n": 132,
+          "mean": 3.598040956439394
+        }
+      }
+    },
+    "selected20_internvl": {
+      "all20": {
+        "text": {
+          "base": {
+            "success": 99,
+            "available_mean": 100.0,
+            "common_n": 99,
+            "common_mean": 100.0,
+            "base_pair_n": 99,
+            "base_pair_mean": 100.0,
+            "baseline_mean": 100.0
+          },
+          "sft": {
+            "success": 99,
+            "available_mean": 100.0,
+            "common_n": 99,
+            "common_mean": 100.0,
+            "base_pair_n": 99,
+            "base_pair_mean": 100.0,
+            "baseline_mean": 100.0
+          },
+          "sft_rl": {
+            "success": 99,
+            "available_mean": 100.0,
+            "common_n": 99,
+            "common_mean": 100.0,
+            "base_pair_n": 99,
+            "base_pair_mean": 100.0,
+            "baseline_mean": 100.0
+          },
+          "sft_rl_rewriter": {
+            "success": 99,
+            "available_mean": 85.77763195410255,
+            "common_n": 99,
+            "common_mean": 85.77763195410255,
+            "base_pair_n": 99,
+            "base_pair_mean": 85.77763195410255,
+            "baseline_mean": 100.0
+          },
+          "sft_rl_untrained": {
+            "success": 99,
+            "available_mean": 43.214504103541536,
+            "common_n": 99,
+            "common_mean": 43.214504103541536,
+            "base_pair_n": 99,
+            "base_pair_mean": 43.214504103541536,
+            "baseline_mean": 100.0
+          }
+        },
+        "image": {
+          "base": {
+            "success": 99,
+            "available_mean": 97.86802002711093,
+            "common_n": 99,
+            "common_mean": 97.86802002711093,
+            "base_pair_n": 99,
+            "base_pair_mean": 97.86802002711093,
+            "baseline_mean": 97.86802002711093
+          },
+          "sft": {
+            "success": 99,
+            "available_mean": 95.26448497036732,
+            "common_n": 99,
+            "common_mean": 95.26448497036732,
+            "base_pair_n": 99,
+            "base_pair_mean": 95.26448497036732,
+            "baseline_mean": 97.86802002711093
+          },
+          "sft_rl": {
+            "success": 99,
+            "available_mean": 98.09735916687788,
+            "common_n": 99,
+            "common_mean": 98.09735916687788,
+            "base_pair_n": 99,
+            "base_pair_mean": 98.09735916687788,
+            "baseline_mean": 97.86802002711093
+          },
+          "sft_rl_rewriter": {
+            "success": 99,
+            "available_mean": 88.79375732539725,
+            "common_n": 99,
+            "common_mean": 88.79375732539725,
+            "base_pair_n": 99,
+            "base_pair_mean": 88.79375732539725,
+            "baseline_mean": 97.86802002711093
+          },
+          "sft_rl_untrained": {
+            "success": 99,
+            "available_mean": 50.762894925105265,
+            "common_n": 99,
+            "common_mean": 50.762894925105265,
+            "base_pair_n": 99,
+            "base_pair_mean": 50.762894925105265,
+            "baseline_mean": 97.86802002711093
+          }
+        },
+        "Product": {
+          "base": {
+            "success": 120,
+            "available_mean": 1.5666666666666667,
+            "common_n": 120,
+            "common_mean": 1.5666666666666667,
+            "base_pair_n": 120,
+            "base_pair_mean": 1.5666666666666667,
+            "baseline_mean": 1.5666666666666667
+          },
+          "sft": {
+            "success": 120,
+            "available_mean": 1.5333333333333334,
+            "common_n": 120,
+            "common_mean": 1.5333333333333334,
+            "base_pair_n": 120,
+            "base_pair_mean": 1.5333333333333334,
+            "baseline_mean": 1.5666666666666667
+          },
+          "sft_rl": {
+            "success": 120,
+            "available_mean": 1.5666666666666667,
+            "common_n": 120,
+            "common_mean": 1.5666666666666667,
+            "base_pair_n": 120,
+            "base_pair_mean": 1.5666666666666667,
+            "baseline_mean": 1.5666666666666667
+          },
+          "sft_rl_rewriter": {
+            "success": 120,
+            "available_mean": 1.8916666666666666,
+            "common_n": 120,
+            "common_mean": 1.8916666666666666,
+            "base_pair_n": 120,
+            "base_pair_mean": 1.8916666666666666,
+            "baseline_mean": 1.5666666666666667
+          },
+          "sft_rl_untrained": {
+            "success": 120,
+            "available_mean": 3.433333333333333,
+            "common_n": 120,
+            "common_mean": 3.433333333333333,
+            "base_pair_n": 120,
+            "base_pair_mean": 3.433333333333333,
+            "baseline_mean": 1.5666666666666667
+          }
+        },
+        "Detail": {
+          "base": {
+            "success": 120,
+            "available_mean": 1.5666666666666667,
+            "common_n": 120,
+            "common_mean": 1.5666666666666667,
+            "base_pair_n": 120,
+            "base_pair_mean": 1.5666666666666667,
+            "baseline_mean": 1.5666666666666667
+          },
+          "sft": {
+            "success": 120,
+            "available_mean": 1.5333333333333334,
+            "common_n": 120,
+            "common_mean": 1.5333333333333334,
+            "base_pair_n": 120,
+            "base_pair_mean": 1.5333333333333334,
+            "baseline_mean": 1.5666666666666667
+          },
+          "sft_rl": {
+            "success": 120,
+            "available_mean": 1.5666666666666667,
+            "common_n": 120,
+            "common_mean": 1.5666666666666667,
+            "base_pair_n": 120,
+            "base_pair_mean": 1.5666666666666667,
+            "baseline_mean": 1.5666666666666667
+          },
+          "sft_rl_rewriter": {
+            "success": 120,
+            "available_mean": 1.9,
+            "common_n": 120,
+            "common_mean": 1.9,
+            "base_pair_n": 120,
+            "base_pair_mean": 1.9,
+            "baseline_mean": 1.5666666666666667
+          },
+          "sft_rl_untrained": {
+            "success": 120,
+            "available_mean": 3.433333333333333,
+            "common_n": 120,
+            "common_mean": 3.433333333333333,
+            "base_pair_n": 120,
+            "base_pair_mean": 3.433333333333333,
+            "baseline_mean": 1.5666666666666667
+          }
+        }
+      },
+      "old15": {
+        "text": {
+          "base": {
+            "success": 74,
+            "available_mean": 100.0,
+            "common_n": 74,
+            "common_mean": 100.0,
+            "base_pair_n": 74,
+            "base_pair_mean": 100.0,
+            "baseline_mean": 100.0
+          },
+          "sft": {
+            "success": 74,
+            "available_mean": 100.0,
+            "common_n": 74,
+            "common_mean": 100.0,
+            "base_pair_n": 74,
+            "base_pair_mean": 100.0,
+            "baseline_mean": 100.0
+          },
+          "sft_rl": {
+            "success": 74,
+            "available_mean": 100.0,
+            "common_n": 74,
+            "common_mean": 100.0,
+            "base_pair_n": 74,
+            "base_pair_mean": 100.0,
+            "baseline_mean": 100.0
+          },
+          "sft_rl_rewriter": {
+            "success": 74,
+            "available_mean": 92.81532656532657,
+            "common_n": 74,
+            "common_mean": 92.81532656532657,
+            "base_pair_n": 74,
+            "base_pair_mean": 92.81532656532657,
+            "baseline_mean": 100.0
+          },
+          "sft_rl_untrained": {
+            "success": 74,
+            "available_mean": 43.64027268439033,
+            "common_n": 74,
+            "common_mean": 43.64027268439033,
+            "base_pair_n": 74,
+            "base_pair_mean": 43.64027268439033,
+            "baseline_mean": 100.0
+          }
+        },
+        "image": {
+          "base": {
+            "success": 74,
+            "available_mean": 98.51190476190476,
+            "common_n": 74,
+            "common_mean": 98.51190476190476,
+            "base_pair_n": 74,
+            "base_pair_mean": 98.51190476190476,
+            "baseline_mean": 98.51190476190476
+          },
+          "sft": {
+            "success": 74,
+            "available_mean": 94.53624078624078,
+            "common_n": 74,
+            "common_mean": 94.53624078624078,
+            "base_pair_n": 74,
+            "base_pair_mean": 94.53624078624078,
+            "baseline_mean": 98.51190476190476
+          },
+          "sft_rl": {
+            "success": 74,
+            "available_mean": 98.32616707616708,
+            "common_n": 74,
+            "common_mean": 98.32616707616708,
+            "base_pair_n": 74,
+            "base_pair_mean": 98.32616707616708,
+            "baseline_mean": 98.51190476190476
+          },
+          "sft_rl_rewriter": {
+            "success": 74,
+            "available_mean": 92.03012640512641,
+            "common_n": 74,
+            "common_mean": 92.03012640512641,
+            "base_pair_n": 74,
+            "base_pair_mean": 92.03012640512641,
+            "baseline_mean": 98.51190476190476
+          },
+          "sft_rl_untrained": {
+            "success": 74,
+            "available_mean": 48.37527955175014,
+            "common_n": 74,
+            "common_mean": 48.37527955175014,
+            "base_pair_n": 74,
+            "base_pair_mean": 48.37527955175014,
+            "baseline_mean": 98.51190476190476
+          }
+        },
+        "Product": {
+          "base": {
+            "success": 90,
+            "available_mean": 1.4444444444444444,
+            "common_n": 90,
+            "common_mean": 1.4444444444444444,
+            "base_pair_n": 90,
+            "base_pair_mean": 1.4444444444444444,
+            "baseline_mean": 1.4444444444444444
+          },
+          "sft": {
+            "success": 90,
+            "available_mean": 1.4,
+            "common_n": 90,
+            "common_mean": 1.4,
+            "base_pair_n": 90,
+            "base_pair_mean": 1.4,
+            "baseline_mean": 1.4444444444444444
+          },
+          "sft_rl": {
+            "success": 90,
+            "available_mean": 1.4222222222222223,
+            "common_n": 90,
+            "common_mean": 1.4222222222222223,
+            "base_pair_n": 90,
+            "base_pair_mean": 1.4222222222222223,
+            "baseline_mean": 1.4444444444444444
+          },
+          "sft_rl_rewriter": {
+            "success": 90,
+            "available_mean": 1.788888888888889,
+            "common_n": 90,
+            "common_mean": 1.788888888888889,
+            "base_pair_n": 90,
+            "base_pair_mean": 1.788888888888889,
+            "baseline_mean": 1.4444444444444444
+          },
+          "sft_rl_untrained": {
+            "success": 90,
+            "available_mean": 3.511111111111111,
+            "common_n": 90,
+            "common_mean": 3.511111111111111,
+            "base_pair_n": 90,
+            "base_pair_mean": 3.511111111111111,
+            "baseline_mean": 1.4444444444444444
+          }
+        },
+        "Detail": {
+          "base": {
+            "success": 90,
+            "available_mean": 1.4444444444444444,
+            "common_n": 90,
+            "common_mean": 1.4444444444444444,
+            "base_pair_n": 90,
+            "base_pair_mean": 1.4444444444444444,
+            "baseline_mean": 1.4444444444444444
+          },
+          "sft": {
+            "success": 90,
+            "available_mean": 1.4,
+            "common_n": 90,
+            "common_mean": 1.4,
+            "base_pair_n": 90,
+            "base_pair_mean": 1.4,
+            "baseline_mean": 1.4444444444444444
+          },
+          "sft_rl": {
+            "success": 90,
+            "available_mean": 1.4222222222222223,
+            "common_n": 90,
+            "common_mean": 1.4222222222222223,
+            "base_pair_n": 90,
+            "base_pair_mean": 1.4222222222222223,
+            "baseline_mean": 1.4444444444444444
+          },
+          "sft_rl_rewriter": {
+            "success": 90,
+            "available_mean": 1.8,
+            "common_n": 90,
+            "common_mean": 1.8,
+            "base_pair_n": 90,
+            "base_pair_mean": 1.8,
+            "baseline_mean": 1.4444444444444444
+          },
+          "sft_rl_untrained": {
+            "success": 90,
+            "available_mean": 3.511111111111111,
+            "common_n": 90,
+            "common_mean": 3.511111111111111,
+            "base_pair_n": 90,
+            "base_pair_mean": 3.511111111111111,
+            "baseline_mean": 1.4444444444444444
+          }
+        }
+      },
+      "train5": {
+        "text": {
+          "base": {
+            "success": 25,
+            "available_mean": 100.0,
+            "common_n": 25,
+            "common_mean": 100.0,
+            "base_pair_n": 25,
+            "base_pair_mean": 100.0,
+            "baseline_mean": 100.0
+          },
+          "sft": {
+            "success": 25,
+            "available_mean": 100.0,
+            "common_n": 25,
+            "common_mean": 100.0,
+            "base_pair_n": 25,
+            "base_pair_mean": 100.0,
+            "baseline_mean": 100.0
+          },
+          "sft_rl": {
+            "success": 25,
+            "available_mean": 100.0,
+            "common_n": 25,
+            "common_mean": 100.0,
+            "base_pair_n": 25,
+            "base_pair_mean": 100.0,
+            "baseline_mean": 100.0
+          },
+          "sft_rl_rewriter": {
+            "success": 25,
+            "available_mean": 64.94605590487943,
+            "common_n": 25,
+            "common_mean": 64.94605590487943,
+            "base_pair_n": 25,
+            "base_pair_mean": 64.94605590487943,
+            "baseline_mean": 100.0
+          },
+          "sft_rl_untrained": {
+            "success": 25,
+            "available_mean": 41.95422910422911,
+            "common_n": 25,
+            "common_mean": 41.95422910422911,
+            "base_pair_n": 25,
+            "base_pair_mean": 41.95422910422911,
+            "baseline_mean": 100.0
+          }
+        },
+        "image": {
+          "base": {
+            "success": 25,
+            "available_mean": 95.96212121212122,
+            "common_n": 25,
+            "common_mean": 95.96212121212122,
+            "base_pair_n": 25,
+            "base_pair_mean": 95.96212121212122,
+            "baseline_mean": 95.96212121212122
+          },
+          "sft": {
+            "success": 25,
+            "available_mean": 97.42008775538187,
+            "common_n": 25,
+            "common_mean": 97.42008775538187,
+            "base_pair_n": 25,
+            "base_pair_mean": 97.42008775538187,
+            "baseline_mean": 95.96212121212122
+          },
+          "sft_rl": {
+            "success": 25,
+            "available_mean": 97.42008775538187,
+            "common_n": 25,
+            "common_mean": 97.42008775538187,
+            "base_pair_n": 25,
+            "base_pair_mean": 97.42008775538187,
+            "baseline_mean": 95.96212121212122
+          },
+          "sft_rl_rewriter": {
+            "success": 25,
+            "available_mean": 79.21410484939896,
+            "common_n": 25,
+            "common_mean": 79.21410484939896,
+            "base_pair_n": 25,
+            "base_pair_mean": 79.21410484939896,
+            "baseline_mean": 95.96212121212122
+          },
+          "sft_rl_untrained": {
+            "success": 25,
+            "available_mean": 57.83023643023643,
+            "common_n": 25,
+            "common_mean": 57.83023643023643,
+            "base_pair_n": 25,
+            "base_pair_mean": 57.83023643023643,
+            "baseline_mean": 95.96212121212122
+          }
+        },
+        "Product": {
+          "base": {
+            "success": 30,
+            "available_mean": 1.9333333333333333,
+            "common_n": 30,
+            "common_mean": 1.9333333333333333,
+            "base_pair_n": 30,
+            "base_pair_mean": 1.9333333333333333,
+            "baseline_mean": 1.9333333333333333
+          },
+          "sft": {
+            "success": 30,
+            "available_mean": 1.9333333333333333,
+            "common_n": 30,
+            "common_mean": 1.9333333333333333,
+            "base_pair_n": 30,
+            "base_pair_mean": 1.9333333333333333,
+            "baseline_mean": 1.9333333333333333
+          },
+          "sft_rl": {
+            "success": 30,
+            "available_mean": 2,
+            "common_n": 30,
+            "common_mean": 2,
+            "base_pair_n": 30,
+            "base_pair_mean": 2,
+            "baseline_mean": 1.9333333333333333
+          },
+          "sft_rl_rewriter": {
+            "success": 30,
+            "available_mean": 2.2,
+            "common_n": 30,
+            "common_mean": 2.2,
+            "base_pair_n": 30,
+            "base_pair_mean": 2.2,
+            "baseline_mean": 1.9333333333333333
+          },
+          "sft_rl_untrained": {
+            "success": 30,
+            "available_mean": 3.2,
+            "common_n": 30,
+            "common_mean": 3.2,
+            "base_pair_n": 30,
+            "base_pair_mean": 3.2,
+            "baseline_mean": 1.9333333333333333
+          }
+        },
+        "Detail": {
+          "base": {
+            "success": 30,
+            "available_mean": 1.9333333333333333,
+            "common_n": 30,
+            "common_mean": 1.9333333333333333,
+            "base_pair_n": 30,
+            "base_pair_mean": 1.9333333333333333,
+            "baseline_mean": 1.9333333333333333
+          },
+          "sft": {
+            "success": 30,
+            "available_mean": 1.9333333333333333,
+            "common_n": 30,
+            "common_mean": 1.9333333333333333,
+            "base_pair_n": 30,
+            "base_pair_mean": 1.9333333333333333,
+            "baseline_mean": 1.9333333333333333
+          },
+          "sft_rl": {
+            "success": 30,
+            "available_mean": 2,
+            "common_n": 30,
+            "common_mean": 2,
+            "base_pair_n": 30,
+            "base_pair_mean": 2,
+            "baseline_mean": 1.9333333333333333
+          },
+          "sft_rl_rewriter": {
+            "success": 30,
+            "available_mean": 2.2,
+            "common_n": 30,
+            "common_mean": 2.2,
+            "base_pair_n": 30,
+            "base_pair_mean": 2.2,
+            "baseline_mean": 1.9333333333333333
+          },
+          "sft_rl_untrained": {
+            "success": 30,
+            "available_mean": 3.2,
+            "common_n": 30,
+            "common_mean": 3.2,
+            "base_pair_n": 30,
+            "base_pair_mean": 3.2,
+            "baseline_mean": 1.9333333333333333
+          }
+        }
+      }
+    },
+    "selected20_historical": [
+      {
+        "cohort": "old15",
+        "method": "base",
+        "total": "90",
+        "seg_eligible": "63",
+        "MUSIQ_n": "90",
+        "MUSIQ_mean": "66.58183691236708",
+        "MUSIQ_common_n": "90",
+        "MUSIQ_common_mean": "66.58183691236708",
+        "Product_n": "90",
+        "Product_mean": "3.2777777777777777",
+        "Detail_n": "90",
+        "Detail_mean": "3.2888888888888888",
+        "Seg_CLIP_n": "63",
+        "Seg_CLIP_mean": "0.7478078253968254",
+        "Seg_CLIP_common_n": "62",
+        "Seg_CLIP_common_mean": "0.7486999677419355",
+        "Seg_DINO_n": "63",
+        "Seg_DINO_mean": "0.4259772857142857",
+        "Seg_DINO_common_n": "62",
+        "Seg_DINO_common_mean": "0.43097337096774196"
+      },
+      {
+        "cohort": "old15",
+        "method": "sft",
+        "total": "90",
+        "seg_eligible": "63",
+        "MUSIQ_n": "90",
+        "MUSIQ_mean": "67.4979655371772",
+        "MUSIQ_common_n": "90",
+        "MUSIQ_common_mean": "67.4979655371772",
+        "Product_n": "90",
+        "Product_mean": "2.811111111111111",
+        "Detail_n": "90",
+        "Detail_mean": "2.888888888888889",
+        "Seg_CLIP_n": "62",
+        "Seg_CLIP_mean": "0.7413111774193548",
+        "Seg_CLIP_common_n": "62",
+        "Seg_CLIP_common_mean": "0.7413111774193548",
+        "Seg_DINO_n": "62",
+        "Seg_DINO_mean": "0.38329056451612903",
+        "Seg_DINO_common_n": "62",
+        "Seg_DINO_common_mean": "0.38329056451612903"
+      },
+      {
+        "cohort": "old15",
+        "method": "sft_rl",
+        "total": "90",
+        "seg_eligible": "63",
+        "MUSIQ_n": "90",
+        "MUSIQ_mean": "66.37149662441678",
+        "MUSIQ_common_n": "90",
+        "MUSIQ_common_mean": "66.37149662441678",
+        "Product_n": "90",
+        "Product_mean": "3.3777777777777778",
+        "Detail_n": "90",
+        "Detail_mean": "3.3555555555555556",
+        "Seg_CLIP_n": "63",
+        "Seg_CLIP_mean": "0.7613839523809524",
+        "Seg_CLIP_common_n": "62",
+        "Seg_CLIP_common_mean": "0.7624047096774194",
+        "Seg_DINO_n": "63",
+        "Seg_DINO_mean": "0.43497220634920636",
+        "Seg_DINO_common_n": "62",
+        "Seg_DINO_common_mean": "0.44189798387096774"
+      },
+      {
+        "cohort": "old15",
+        "method": "sft_rl_rewriter",
+        "total": "90",
+        "seg_eligible": "63",
+        "MUSIQ_n": "90",
+        "MUSIQ_mean": "67.51942291259766",
+        "MUSIQ_common_n": "90",
+        "MUSIQ_common_mean": "67.51942291259766",
+        "Product_n": "90",
+        "Product_mean": "3.6666666666666665",
+        "Detail_n": "90",
+        "Detail_mean": "3.533333333333333",
+        "Seg_CLIP_n": "63",
+        "Seg_CLIP_mean": "0.7712129841269841",
+        "Seg_CLIP_common_n": "62",
+        "Seg_CLIP_common_mean": "0.7724136290322581",
+        "Seg_DINO_n": "63",
+        "Seg_DINO_mean": "0.4708796507936508",
+        "Seg_DINO_common_n": "62",
+        "Seg_DINO_common_mean": "0.4777959516129032"
+      },
+      {
+        "cohort": "train5",
+        "method": "base",
+        "total": "30",
+        "seg_eligible": "19",
+        "MUSIQ_n": "30",
+        "MUSIQ_mean": "65.55420888264975",
+        "MUSIQ_common_n": "30",
+        "MUSIQ_common_mean": "65.55420888264975",
+        "Product_n": "30",
+        "Product_mean": "3.3333333333333335",
+        "Detail_n": "30",
+        "Detail_mean": "3.3333333333333335",
+        "Seg_CLIP_n": "14",
+        "Seg_CLIP_mean": "0.7352997142857143",
+        "Seg_CLIP_common_n": "13",
+        "Seg_CLIP_common_mean": "0.7351225384615385",
+        "Seg_DINO_n": "14",
+        "Seg_DINO_mean": "0.4104534285714286",
+        "Seg_DINO_common_n": "13",
+        "Seg_DINO_common_mean": "0.3986213846153846"
+      },
+      {
+        "cohort": "train5",
+        "method": "sft",
+        "total": "30",
+        "seg_eligible": "19",
+        "MUSIQ_n": "30",
+        "MUSIQ_mean": "67.18648312886556",
+        "MUSIQ_common_n": "30",
+        "MUSIQ_common_mean": "67.18648312886556",
+        "Product_n": "30",
+        "Product_mean": "3.433333333333333",
+        "Detail_n": "30",
+        "Detail_mean": "3.3666666666666667",
+        "Seg_CLIP_n": "17",
+        "Seg_CLIP_mean": "0.7545901176470589",
+        "Seg_CLIP_common_n": "13",
+        "Seg_CLIP_common_mean": "0.7687937692307693",
+        "Seg_DINO_n": "17",
+        "Seg_DINO_mean": "0.4658514705882353",
+        "Seg_DINO_common_n": "13",
+        "Seg_DINO_common_mean": "0.48790107692307694"
+      },
+      {
+        "cohort": "train5",
+        "method": "sft_rl",
+        "total": "30",
+        "seg_eligible": "19",
+        "MUSIQ_n": "30",
+        "MUSIQ_mean": "66.52265281677246",
+        "MUSIQ_common_n": "30",
+        "MUSIQ_common_mean": "66.52265281677246",
+        "Product_n": "30",
+        "Product_mean": "3.3666666666666667",
+        "Detail_n": "30",
+        "Detail_mean": "3.1333333333333333",
+        "Seg_CLIP_n": "16",
+        "Seg_CLIP_mean": "0.732766625",
+        "Seg_CLIP_common_n": "13",
+        "Seg_CLIP_common_mean": "0.7562826923076923",
+        "Seg_DINO_n": "16",
+        "Seg_DINO_mean": "0.4072626875",
+        "Seg_DINO_common_n": "13",
+        "Seg_DINO_common_mean": "0.45467753846153847"
+      },
+      {
+        "cohort": "train5",
+        "method": "sft_rl_rewriter",
+        "total": "30",
+        "seg_eligible": "19",
+        "MUSIQ_n": "30",
+        "MUSIQ_mean": "67.77739321390787",
+        "MUSIQ_common_n": "30",
+        "MUSIQ_common_mean": "67.77739321390787",
+        "Product_n": "30",
+        "Product_mean": "3",
+        "Detail_n": "30",
+        "Detail_mean": "2.8333333333333335",
+        "Seg_CLIP_n": "18",
+        "Seg_CLIP_mean": "0.7543526111111111",
+        "Seg_CLIP_common_n": "13",
+        "Seg_CLIP_common_mean": "0.7608896153846154",
+        "Seg_DINO_n": "18",
+        "Seg_DINO_mean": "0.5179506666666667",
+        "Seg_DINO_common_n": "13",
+        "Seg_DINO_common_mean": "0.5473136923076923"
+      },
+      {
+        "cohort": "combined20",
+        "method": "base",
+        "total": "120",
+        "seg_eligible": "82",
+        "MUSIQ_n": "120",
+        "MUSIQ_mean": "66.32492990493775",
+        "MUSIQ_common_n": "120",
+        "MUSIQ_common_mean": "66.32492990493775",
+        "Product_n": "120",
+        "Product_mean": "3.2916666666666665",
+        "Detail_n": "120",
+        "Detail_mean": "3.3",
+        "Seg_CLIP_n": "77",
+        "Seg_CLIP_mean": "0.7455336233766233",
+        "Seg_CLIP_common_n": "75",
+        "Seg_CLIP_common_mean": "0.7463465466666667",
+        "Seg_DINO_n": "77",
+        "Seg_DINO_mean": "0.42315476623376624",
+        "Seg_DINO_common_n": "75",
+        "Seg_DINO_common_mean": "0.42536569333333335"
+      },
+      {
+        "cohort": "combined20",
+        "method": "sft",
+        "total": "120",
+        "seg_eligible": "82",
+        "MUSIQ_n": "120",
+        "MUSIQ_mean": "67.42009493509929",
+        "MUSIQ_common_n": "120",
+        "MUSIQ_common_mean": "67.42009493509929",
+        "Product_n": "120",
+        "Product_mean": "2.966666666666667",
+        "Detail_n": "120",
+        "Detail_mean": "3.0083333333333333",
+        "Seg_CLIP_n": "79",
+        "Seg_CLIP_mean": "0.744168670886076",
+        "Seg_CLIP_common_n": "75",
+        "Seg_CLIP_common_mean": "0.7460748266666667",
+        "Seg_DINO_n": "79",
+        "Seg_DINO_mean": "0.401056835443038",
+        "Seg_DINO_common_n": "75",
+        "Seg_DINO_common_mean": "0.40142305333333334"
+      },
+      {
+        "cohort": "combined20",
+        "method": "sft_rl",
+        "total": "120",
+        "seg_eligible": "82",
+        "MUSIQ_n": "120",
+        "MUSIQ_mean": "66.4092856725057",
+        "MUSIQ_common_n": "120",
+        "MUSIQ_common_mean": "66.4092856725057",
+        "Product_n": "120",
+        "Product_mean": "3.375",
+        "Detail_n": "120",
+        "Detail_mean": "3.3",
+        "Seg_CLIP_n": "79",
+        "Seg_CLIP_mean": "0.7555880379746835",
+        "Seg_CLIP_common_n": "75",
+        "Seg_CLIP_common_mean": "0.76134356",
+        "Seg_DINO_n": "79",
+        "Seg_DINO_mean": "0.42936015189873417",
+        "Seg_DINO_common_n": "75",
+        "Seg_DINO_common_mean": "0.44411310666666665"
+      },
+      {
+        "cohort": "combined20",
+        "method": "sft_rl_rewriter",
+        "total": "120",
+        "seg_eligible": "82",
+        "MUSIQ_n": "120",
+        "MUSIQ_mean": "67.58391548792521",
+        "MUSIQ_common_n": "120",
+        "MUSIQ_common_mean": "67.58391548792521",
+        "Product_n": "120",
+        "Product_mean": "3.5",
+        "Detail_n": "120",
+        "Detail_mean": "3.3583333333333334",
+        "Seg_CLIP_n": "81",
+        "Seg_CLIP_mean": "0.7674662345679012",
+        "Seg_CLIP_common_n": "75",
+        "Seg_CLIP_common_mean": "0.7704161333333334",
+        "Seg_DINO_n": "81",
+        "Seg_DINO_mean": "0.48133987654320987",
+        "Seg_DINO_common_n": "75",
+        "Seg_DINO_common_mean": "0.48984569333333333"
+      }
+    ]
+  }
+}

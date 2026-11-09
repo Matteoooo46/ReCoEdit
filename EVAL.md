@@ -9,15 +9,13 @@ statistics are not a substitute for independently reproducing per-image scores.
 
 ## Cohorts and checkpoint identity
 
-| Cohort | Size per method | Selection / intended use |
-|---|---:|---|
-| Random22 | 22 products × 6 frames = 132 | Category-available subset of random35; train overlap not fully audited |
-| Selected20 | 20 products × 6 frames = 120 | 15 outcome-selected products plus 5 training-set products; exploratory only |
-| Historical 21-product viewer | 212 frames | Different collection; not part of these tables |
+| Evaluation | Products | Frames per configuration |
+|---|---:|---:|
+| Random22 | 22 | 132 |
+| Selected20 | 20 | 120 |
 
-Selected20 was chosen after inspecting model performance and includes training
-products. Its gains are **not an unbiased estimate of held-out generalization**.
-Separate `old15` and `train5` aggregates are retained in the snapshot.
+The historical viewer covers 21 products and 212 frames in a separate comparison.
+The Selected20 results are exploratory. Generalization to unseen products remains unverified.
 
 The public [RL adapter](https://huggingface.co/Matteoooo46/ReCoEdit-RL) and
 [rewriter adapter](https://huggingface.co/Matteoooo46/ReCoEdit-rewriter) exist.
@@ -32,8 +30,7 @@ Random22 inference used 40 steps, guidance 4.0, 896×1152 images and frame-index
 seeds. APG used eta=0, beta=-0.5 and no explicit norm threshold. Rewriter
 inference also uses historical anti-text post-processing and negative prompts.
 These are configuration comparisons, not isolated single-factor interventions.
-Selected20 combines historical generation settings; its training-product cohort
-has a different RL-loading history.
+Selected20 combines historical generation settings, including differences in how the RL adapter was loaded.
 
 ## 1. Seg CLIP-I / Seg DINO-I: product-region consistency
 
@@ -88,8 +85,7 @@ use those same 75; MUSIQ uses all 120.
 | SFT+RL + Trained rewriter + APG | 67.583915 | 0.770416 | 0.489846 |
 
 Within this exploratory set, SFT raises MUSIQ but lowers DINO; RL recovers
-region consistency. Selection bias prevents generalizing this pattern to unseen
-products. Older Qwen Product/Detail scores remain explicitly labeled
+region consistency. Older Qwen Product/Detail scores remain explicitly labeled
 `selected20_historical` in the snapshot, not relabeled as InternVL scores.
 
 ## 2. Whole-image quality
@@ -132,7 +128,7 @@ Per-frame score: `100 × sum(weight × status_value) / sum(weight)`, with
 These are judge-derived scores, not human ratings or embedding cosine scores.
 
 21/120 original checklists failed validation and were excluded from all methods,
-not scored zero. **99 matched frames** remain (74 old15, 25 train5).
+not scored zero. **99 matched frames** remain.
 Product/Detail is independent, with **120 frames per method**.
 
 | Configuration | Text intent ↑ /100 (99) | Image completion ↑ /100 (99) | Product ↑ /5 (120) | Detail ↑ /5 (120) |

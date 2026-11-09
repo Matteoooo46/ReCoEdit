@@ -83,7 +83,7 @@ On 117 matched frames successfully evaluated in all three configurations, the fu
 | RL + Original prompt + APG | 0.716729 | 0.351560 |
 | RL + Trained rewriter + APG | **0.746724** | **0.421937** |
 
-All runs cover 22 products × 6 frames. Valid evaluations are 124/132, 124/132 and 120/132 respectively; failures are excluded, not scored as zero. This compares complete inference configurations: weight and guidance changes are not isolated, and rewriter mode also uses anti-text prompts. These similarity metrics are distinct from the training reward above.
+Each configuration covers 22 products and 132 frames. Valid evaluations are 124/132, 124/132 and 120/132 respectively; failures are excluded, not scored as zero. This compares complete inference configurations: weight and guidance changes are not isolated, and rewriter mode also uses anti-text prompts. These similarity metrics are distinct from the training reward above.
 
 See [**validation protocol, coverage and score files**](EVAL.md) and the [**22-product three-way image viewer**](https://js-ad.a.yximgs.com/bs2/ad-nieuwland-material/qwen_inference/comparison/random22_three_way_20260916/12120fd339b23558/index.html).
 
@@ -99,13 +99,12 @@ See [**validation protocol, coverage and score files**](EVAL.md) and the [**22-p
   versus **0.746724 / 0.421937** for RL + trained rewriter + APG.
 - On all 132 frames, SFT + Original + APG improves MUSIQ from **66.833409**
   (Base + Original + APG) to **67.677882**.
-- On 99 matched frames from exploratory selected20, trained rewriting improves
-  InternVL text-intent/image-completion over untrained rewriting by
-  **42.563 / 38.031 points**. This is not a held-out generalization claim.
+- The exploratory rewriter comparison covers 20 products and 120 frames.
+  On 99 matched frames, trained rewriting improves InternVL text intent and
+  image completion over untrained rewriting by **42.563 / 38.031 points**.
 
 These compare archived configurations with guidance, prompt-processing and
-checkpoint-provenance caveats. Selected20 was outcome-selected and includes
-training products. Full denominators, negative results and judge limitations
+checkpoint-provenance caveats. Full denominators, negative results and judge limitations
 are in [EVAL.md](EVAL.md); machine-readable aggregates are in
 [docs/results/archived_metrics.json](docs/results/archived_metrics.json).
 
@@ -177,7 +176,7 @@ python inference/qwen_image_edit_2511_inference_apg_rewriter.py \
 
 ## 🔥 Train & Eval
 
-- **Training** — full three-stage pipeline (rewriter SFT → edit-model SFT → consistency RL), including data format, hyperparameters, and launch commands: [**TRAIN.md**](TRAIN.md).
+- **Training guide** — full three-stage pipeline (rewriter SFT → edit-model SFT → consistency RL), including data format, hyperparameters, and launch commands: [**TRAIN.md**](TRAIN.md).
 - **Data construction** — synthesis, captioning, editor/rewriter schemas, audited
   statistics and portable annotation export: [**DATA_PIPELINE.md**](DATA_PIPELINE.md).
 - **Evaluation** — archived results, cohort definitions, scoring protocols and

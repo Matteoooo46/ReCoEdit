@@ -8,7 +8,7 @@ On **117 matched frames valid in all three configurations**, the complete RL + t
 
 ### Data and inference
 
-From the existing random35 product list, select the **22 products with nonempty Hive second-level categories** in the exported lookup; exclude 13 with missing categories. Each product has six storyboard instructions: **132 frames per configuration, 396 images total**. Align samples by product ID and frame index. This is a category-available subset; training/evaluation overlap has not been audited.
+The evaluation covers **22 products and 132 frames per configuration** (396 generated images across the three configurations). Align samples by product ID and frame index.
 
 | Configuration | Image weights | Prompt / guidance |
 |---|---|---|

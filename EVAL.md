@@ -12,3 +12,12 @@ We evaluate 15 products across 90 frames. All four configurations use the same r
 MUSIQ measures whole-image quality. InternVL3.5-8B-Instruct rates product identity and detail preservation on separate five-point scales. These three metrics use all 90 frames per configuration.
 
 Seg CLIP-I and Seg DINO-I compare product regions extracted with Grounding DINO and SAM 2. Both metrics use the same 62 frames for which the original instruction calls for product-related content and region extraction succeeds in all four configurations.
+
+## Edit-intent preservation
+
+Both rewriter versions are scored on the same 90 frames from the 15 products. InternVL3.5-8B-Instruct measures how well the rewritten prompt and generated image satisfy requirements from the original instruction. Scores are mean weighted checklist coverage on a 0–100 scale.
+
+| Rewriter | Text intent ↑ | Image completion ↑ |
+|---|---:|---:|
+| Without task-specific training | 43.21 | 50.76 |
+| Trained | **85.78** | **88.79** |

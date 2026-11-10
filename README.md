@@ -75,7 +75,7 @@ Full epoch-by-epoch reward curve is in [**TRAIN.md**](TRAIN.md).
 
 ### Evaluation
 
-The main evaluation uses 15 products, with 90 frames in total. See [EVAL.md](EVAL.md).
+The evaluation uses 15 products and 90 frames. See [EVAL.md](EVAL.md) for the scores and metric coverage.
 
 ## 🔥 Quick Start
 
@@ -148,7 +148,7 @@ python inference/qwen_image_edit_2511_inference_apg_rewriter.py \
 - **Training guide** — full three-stage pipeline (rewriter SFT → edit-model SFT → consistency RL), including data format, hyperparameters, and launch commands: [**TRAIN.md**](TRAIN.md).
 - **Data construction** — synthesis, captioning, editor/rewriter schemas, audited
   statistics and portable annotation export: [**DATA_PIPELINE.md**](DATA_PIPELINE.md).
-- **Evaluation** — main evaluation sample size: [**EVAL.md**](EVAL.md).
+- **Evaluation** — scores and metric coverage: [**EVAL.md**](EVAL.md).
 
 ## 🙏 Acknowledgments
 

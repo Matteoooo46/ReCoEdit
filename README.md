@@ -73,40 +73,9 @@ The internal product-consistency reward improves substantially during RL trainin
 
 Full epoch-by-epoch reward curve is in [**TRAIN.md**](TRAIN.md).
 
-### Product-region validation (22 products)
+### Evaluation
 
-On 117 matched frames successfully evaluated in all three configurations, the full trained pipeline improves Seg CLIP-I by **+0.037231 (+5.25%)** and Seg DINO-I by **+0.076935 (+22.30%)** over the base-model CFG pipeline.
-
-| Inference configuration | Seg CLIP-I ↑ | Seg DINO-I ↑ |
-|---|---:|---:|
-| Base + Original prompt + CFG | 0.709493 | 0.345001 |
-| RL + Original prompt + APG | 0.716729 | 0.351560 |
-| RL + Trained rewriter + APG | **0.746724** | **0.421937** |
-
-Each configuration covers 22 products and 132 frames. Valid evaluations are 124/132, 124/132 and 120/132 respectively; failures are excluded, not scored as zero. This compares complete inference configurations: weight and guidance changes are not isolated, and rewriter mode also uses anti-text prompts. These similarity metrics are distinct from the training reward above.
-
-See [**validation protocol, coverage and score files**](EVAL.md) and the [**22-product three-way image viewer**](https://js-ad.a.yximgs.com/bs2/ad-nieuwland-material/qwen_inference/comparison/random22_three_way_20260916/12120fd339b23558/index.html).
-
-> [!NOTE]
-> The value above is the internal RL reward, not an independent image-quality or
-> generalization metric. See [EVAL.md](EVAL.md) for measured results and caveats,
-> and [DATA_PIPELINE.md](DATA_PIPELINE.md) for data construction and audited counts.
-
-### Archived evaluation highlights
-
-- On 117 common successfully segmented frames from the 22-product comparison,
-  Base + Original + CFG scores **0.709493 / 0.345001** (Seg CLIP-I / DINO-I),
-  versus **0.746724 / 0.421937** for RL + trained rewriter + APG.
-- On all 132 frames, SFT + Original + APG improves MUSIQ from **66.833409**
-  (Base + Original + APG) to **67.677882**.
-- The exploratory rewriter comparison covers 20 products and 120 frames.
-  On 99 matched frames, trained rewriting improves InternVL text intent and
-  image completion over untrained rewriting by **42.563 / 38.031 points**.
-
-These compare archived configurations with guidance, prompt-processing and
-checkpoint-provenance caveats. Full denominators, negative results and judge limitations
-are in [EVAL.md](EVAL.md); machine-readable aggregates are in
-[docs/results/archived_metrics.json](docs/results/archived_metrics.json).
+The main evaluation uses 15 products, with 90 frames in total. See [EVAL.md](EVAL.md).
 
 ## 🔥 Quick Start
 
@@ -179,8 +148,7 @@ python inference/qwen_image_edit_2511_inference_apg_rewriter.py \
 - **Training guide** — full three-stage pipeline (rewriter SFT → edit-model SFT → consistency RL), including data format, hyperparameters, and launch commands: [**TRAIN.md**](TRAIN.md).
 - **Data construction** — synthesis, captioning, editor/rewriter schemas, audited
   statistics and portable annotation export: [**DATA_PIPELINE.md**](DATA_PIPELINE.md).
-- **Evaluation** — archived results, cohort definitions, scoring protocols and
-  validity limitations: [**EVAL.md**](EVAL.md).
+- **Evaluation** — main evaluation sample size: [**EVAL.md**](EVAL.md).
 
 ## 🙏 Acknowledgments
 
